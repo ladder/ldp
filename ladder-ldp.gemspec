@@ -27,7 +27,6 @@ Gem::Specification.new do |gem|
   gem.requirements               = []
 
   gem.add_runtime_dependency      'rdf-ldp'
-  gem.add_runtime_dependency      'mongoid-grid_fs'
   gem.add_runtime_dependency      'active_triples-mongoid_strategy'
 
   gem.add_development_dependency 'pry'
