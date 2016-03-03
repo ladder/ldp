@@ -1,8 +1,9 @@
+require 'pry' # for debugging
+
 require 'rack/ldp'
 require 'sinatra/base'
 require 'active_triples/mongoid_strategy'
 
-require 'pry' # for debugging
 require_relative '../lib/ladder/non_rdf_source'
 
 class Ladder < Sinatra::Base
