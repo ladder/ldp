@@ -2,7 +2,10 @@ require 'rack/ldp'
 require 'sinatra/base'
 require 'active_triples/mongoid_strategy'
 
-class RDF::Ladder < Sinatra::Base
+require 'pry' # for debugging
+require_relative '../lib/ladder/non_rdf_source'
+
+class Ladder < Sinatra::Base
 
   use Rack::LDP::ContentNegotiation
   use Rack::LDP::Errors

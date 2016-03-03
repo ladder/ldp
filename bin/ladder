@@ -2,4 +2,4 @@
 $:.unshift(File.expand_path(File.join(File.dirname(__FILE__), '..', 'app')))
 require 'ladder'
 
-RDF::Ladder.run!
+Ladder.run!
