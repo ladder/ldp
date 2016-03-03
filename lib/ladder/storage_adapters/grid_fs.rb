@@ -49,7 +49,7 @@ class GridFSAdapter
   def io(&block)
 
     if block_given? then # WRITE MODE
-      @bucket.open_upload_stream(@resource.subject_uri.path, {}, &block)
+      yield GridIO.new(@resource.subject_uri.path)
     else # READ MODE
       @bucket.open_download_stream_by_name(@resource.subject_uri.path)
     end
@@ -61,4 +61,22 @@ class GridFSAdapter
     file = @bucket.find_one(filename: @resource.subject_uri.path)
     @bucket.delete_one(file)
   end
+end
+
+class GridIO
+
+  def initialize(filename)
+    @filename = filename
+    @bucket = Mongoid.default_client.database.fs
+  end
+
+  def write(string)
+    @bucket.upload_from_stream(@filename, string)
+    string.length
+  end
+
+#  def method_missing(symbol, *args)
+#    binding.pry
+#  end
+
 end
