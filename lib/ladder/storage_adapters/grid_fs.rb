@@ -43,40 +43,51 @@ class GridFSAdapter
   # @param [NonRDFSource] resource
   def initialize(resource)
     @resource = resource
+    @filename = resource.subject_uri.path
     @bucket = Mongoid.default_client.database.fs
   end
 
   def io(&block)
-
-    if block_given? then # WRITE MODE
-      yield GridIO.new(@resource.subject_uri.path)
-    else # READ MODE
-      @bucket.open_download_stream_by_name(@resource.subject_uri.path)
+    if block_given? then
+      yield self
+    else
+      close_stream
+      self
     end
-
-  end
-
-  def delete
-    # FIXME: this requires an extra query
-    file = @bucket.find_one(filename: @resource.subject_uri.path)
-    @bucket.delete_one(file)
-  end
-end
-
-class GridIO
-
-  def initialize(filename)
-    @filename = filename
-    @bucket = Mongoid.default_client.database.fs
   end
 
   def write(string)
-    @bucket.upload_from_stream(@filename, string)
-    string.length
+    # NB: we explicitly set chunk_size based on the size
+    # of incoming chunnks from rack; it is assumed that all
+    # chunks will be the same size
+    chunk_size = string.length
+
+    # open an upload stream
+    @stream ||= @bucket.open_upload_stream(@filename, chunk_size: chunk_size)
+    @stream.write(string)
+
+    chunk_size
   end
 
-#  def method_missing(symbol, *args)
-#    binding.pry
-#  end
+  def each(&block)
+    # open a download stream
+    @stream ||= @bucket.open_download_stream_by_name(@filename)
+    @stream.each &block
+  end
+
+  def delete
+    # FIXME: this requires extra querying; not performant
+    file = @bucket.find_one(filename: @filename)
+    @bucket.delete_one(file)
+  end
+
+  def close_stream
+    @stream.close if @stream
+    @stream = nil
+  end
+
+  def method_missing(symbol, *args)
+    binding.pry
+  end
 
 end
