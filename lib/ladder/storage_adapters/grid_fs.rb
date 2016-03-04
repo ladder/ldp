@@ -92,7 +92,7 @@ class GridFSAdapter
   # chunks in the collection.
   def delete
     files = @bucket.find(filename: @filename)
-    raise Error::FileNotFound.new(id, :id) if files.count == 0
+    raise Mongo::Error::FileNotFound.new(@filename, :path) if files.count == 0
 
     ids = files.map(&:extract_id)
     @bucket.files_collection.delete_many(_id: {'$in': ids})
