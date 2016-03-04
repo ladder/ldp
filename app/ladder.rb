@@ -5,6 +5,7 @@ require 'sinatra/base'
 require 'active_triples/mongoid_strategy'
 
 require_relative '../lib/ladder/non_rdf_source'
+require_relative '../lib/ladder/rdf_source'
 
 class Ladder < Sinatra::Base
 
