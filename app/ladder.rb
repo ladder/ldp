@@ -20,7 +20,7 @@ class Ladder < Sinatra::Base
     # will have to modify RDFSource (or Resource)
     set :repository, RDF::Repository.new
 
-    options = { clients: { default: { database: 'active_triples', hosts: ['localhost:27017'] } } }
+    options = { clients: { default: { database: 'ladder', hosts: ['localhost:27017'] } } }
     Mongoid.load_configuration(options)
     Mongo::Logger.logger.level = Logger::DEBUG
   end
