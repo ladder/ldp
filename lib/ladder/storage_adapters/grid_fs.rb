@@ -42,24 +42,32 @@ class GridFSAdapter
   #
   # @param [NonRDFSource] resource
   def initialize(resource)
-    @resource = resource
     @filename = resource.subject_uri.path
     @bucket = Mongoid.default_client.database.fs
   end
 
+  ## 
+  # @yield [IO] yields an instance of GridFSAdapter with an opened write
+  #   stream.  The stream will be closed when the block ends.
+  #
+  # @return [GridFSAdapter] an instance of GridFSAdapter
   def io(&block)
-    if block_given? then
-      yield self
-    else
-      close_stream
-      self
-    end
+    return yield(self) if block_given?
+    close_stream
+    self
   end
 
+  ##
+  # IO-like method for writing a file to GridFS as a stream.
+  # Each chunk is persisted as it is written, with the write
+  # stream left open.
+  #
+  # NB: We explicitly set chunk_size based on the size
+  # of incoming chunks from Rack; it is assumed that all
+  # chunks will be the same size.
+  #
+  # @param [String] a string to write to the GridFS file.
   def write(string)
-    # NB: we explicitly set chunk_size based on the size
-    # of incoming chunnks from rack; it is assumed that all
-    # chunks will be the same size
     chunk_size = string.length
 
     # open an upload stream
@@ -69,25 +77,32 @@ class GridFSAdapter
     chunk_size
   end
 
+  ##
+  # IO-like method for reading a file from GridFS as a stream.
+  #
+  # @param [Proc] a block which iterates over the returned chunks.
   def each(&block)
     # open a download stream
     @stream ||= @bucket.open_download_stream_by_name(@filename)
     @stream.each &block
   end
 
+  ##
+  # This will remove all revisions of the file and corresponding
+  # chunks in the collection.
   def delete
-    # FIXME: this requires extra querying; not performant
-    file = @bucket.find_one(filename: @filename)
-    @bucket.delete_one(file)
+    files = @bucket.find(filename: @filename)
+    raise Error::FileNotFound.new(id, :id) if files.count == 0
+
+    ids = files.map(&:extract_id)
+    @bucket.files_collection.delete_many(_id: {'$in': ids})
+    @bucket.chunks_collection.delete_many(files_id: {'$in': ids})
   end
+
+  private
 
   def close_stream
     @stream.close if @stream
     @stream = nil
   end
-
-  def method_missing(symbol, *args)
-    binding.pry
-  end
-
 end
