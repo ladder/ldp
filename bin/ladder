@@ -6,4 +6,4 @@ Bundler.setup
 
 require 'ladder'
 
-Ladder.run!
+Ladder::LDP.run!

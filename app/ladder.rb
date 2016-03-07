@@ -2,12 +2,12 @@ require 'pry' # for debugging
 
 require 'rack/ldp'
 require 'sinatra/base'
-require 'active_triples/mongoid_strategy'
+require 'mongoid'
 
+require_relative '../lib/ladder/repository'
 require_relative '../lib/ladder/non_rdf_source'
-require_relative '../lib/ladder/rdf_source'
 
-class Ladder < Sinatra::Base
+class Ladder::LDP < Sinatra::Base
 
   use Rack::LDP::ContentNegotiation
   use Rack::LDP::Errors
@@ -17,9 +17,8 @@ class Ladder < Sinatra::Base
 
   # Set defaults in case user has not configured values
   configure do
-    # TODO: we're not actually going to use a repository
-    # will have to modify RDFSource (or Resource)
-    set :repository, RDF::Repository.new
+    # Use a class that implements the RDF::Repository interface
+    set :repository, Ladder::Repository.new
 
     options = { clients: { default: { database: 'ladder', hosts: ['localhost:27017'] } } }
     Mongoid.load_configuration(options)
