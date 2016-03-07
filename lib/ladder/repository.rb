@@ -29,9 +29,9 @@ module Ladder
 
       graph.supports? feature
     end
-    
-    def transaction(&block)
-      block.yield graph
+
+    def transaction(mutable: true, &block)
+      graph.transaction(mutable: true, &block)
 
       # Assign a graph name if the RDFSource doesn't have one
       @rdf_source.set_subject! graph.name unless @rdf_source.uri?
