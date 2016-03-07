@@ -31,6 +31,10 @@ module Ladder
     end
 
     def transaction(mutable: true, &block)
+      # FIXME / TODO
+      # RDF::Graph doesn't support #transaction in 1.99, only 2.0.0
+      # we have to implement a RDF::Repository storage adapter
+      #
       graph.transaction(mutable: true, &block)
 
       # Assign a graph name if the RDFSource doesn't have one
