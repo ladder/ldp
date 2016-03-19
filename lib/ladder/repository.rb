@@ -23,6 +23,10 @@ module Ladder
     #
     #####
 
+    def clear!
+      @rdf_source.destroy!
+    end
+
     def supports?(feature)
       # RDFSource uses #rdf_subject as a sort of #graph_name
       return true if :graph_name == feature
@@ -33,9 +37,10 @@ module Ladder
     def transaction(mutable: true, &block)
       # FIXME / TODO
       # RDF::Graph doesn't support #transaction in 1.99, only 2.0.0
-      # we have to implement a RDF::Repository storage adapter
-      #
-      graph.transaction(mutable: true, &block)
+      repo = RDF::Repository.new
+      repo.transaction(mutable: true, &block)
+
+      graph << repo
 
       # Assign a graph name if the RDFSource doesn't have one
       @rdf_source.set_subject! graph.name unless @rdf_source.uri?

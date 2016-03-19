@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/ActiveTriples/ActiveTriples.git
-  revision: 4e9fbd3bade894d20ebf67170033128f31c54208
+  revision: f2f3182eef834f77d3ae0f5f6a9c60a85415a0e9
   branch: develop
   specs:
     active-triples (0.8.1)
@@ -23,10 +23,10 @@ GEM
     active_triples-mongoid_strategy (0.1.0)
       active-triples (~> 0.8)
       mongoid (~> 5.0)
-    activemodel (4.2.5.2)
-      activesupport (= 4.2.5.2)
+    activemodel (4.2.6)
+      activesupport (= 4.2.6)
       builder (~> 3.1)
-    activesupport (4.2.5.2)
+    activesupport (4.2.6)
       i18n (~> 0.7)
       json (~> 1.7, >= 1.7.7)
       minitest (~> 5.1)
@@ -107,6 +107,7 @@ GEM
       rack (>= 1.4)
     rack-protection (1.5.3)
       rack
+    rake (11.1.1)
     rdf (1.99.0)
       link_header (~> 0.0, >= 0.0.8)
     rdf-aggregate-repo (1.99.0)
@@ -172,7 +173,7 @@ GEM
       rspec-core (~> 3.4.0)
       rspec-expectations (~> 3.4.0)
       rspec-mocks (~> 3.4.0)
-    rspec-core (3.4.3)
+    rspec-core (3.4.4)
       rspec-support (~> 3.4.0)
     rspec-expectations (3.4.0)
       diff-lcs (>= 1.2.0, < 2.0)
@@ -211,6 +212,7 @@ DEPENDENCIES
   active-triples!
   ladder-ldp!
   pry
+  rake
   rspec
   yard
 
