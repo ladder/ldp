@@ -8,7 +8,21 @@ module Ladder
       @rdf_source.set_persistence_strategy(ActiveTriples::MongoidStrategy)
     end
 
+    # FIXME: #query should query the datastore, not the @rdf_source
     delegate :to_a, :query, :has_graph?, to: :'@rdf_source'
+
+    # def clear!
+    # def supports?(feature)
+    # def insert_statement(statement)
+    # def delete_statement(statement)
+    # def durable?; true; end
+    # def empty?
+    # def count
+    # def clear_statements
+    # def has_statement?(statement)
+    # def each_statement(&block)
+    # alias_method :each, :each_statement
+    # def has_graph?(value)
 
     def graph
       @rdf_source.send(:graph)
