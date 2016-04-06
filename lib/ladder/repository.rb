@@ -24,6 +24,10 @@ module Ladder
     # alias_method :each, :each_statement
     # def has_graph?(value)
 
+    # def insert
+    # def first
+    delegate :insert, :first, to: :graph
+
     def graph
       @rdf_source.send(:graph)
     end
@@ -52,7 +56,7 @@ module Ladder
       # FIXME / TODO
       # RDF::Graph doesn't support #transaction in 1.99, only 2.0.0
       repo = RDF::Repository.new
-      repo.transaction(mutable: true, &block)
+      repo.transaction(mutable: true, &block) # NB: this is the slowest part of persistence
 
       graph << repo
 
