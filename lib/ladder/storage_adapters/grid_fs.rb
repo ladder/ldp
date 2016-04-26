@@ -43,10 +43,13 @@ class GridFSAdapter
   # @param [NonRDFSource] resource
   def initialize(resource)
     @filename = resource.subject_uri.path
-    @bucket = Mongoid.default_client.database.fs
+
+    repository = resource.instance_variable_get('@data')
+    client = repository.instance_variable_get('@client')
+    @bucket = client.database.fs
   end
 
-  ## 
+  ##
   # @yield [IO] yields an instance of GridFSAdapter with an opened write
   #   stream.  The stream will be closed when the block ends.
   #
@@ -95,8 +98,8 @@ class GridFSAdapter
     raise Mongo::Error::FileNotFound.new(@filename, :path) if files.count == 0
 
     ids = files.map(&:extract_id)
-    @bucket.files_collection.delete_many(_id: {'$in': ids})
-    @bucket.chunks_collection.delete_many(files_id: {'$in': ids})
+    @bucket.files_collection.delete_many(_id: {'$in' => ids})
+    @bucket.chunks_collection.delete_many(files_id: {'$in' => ids})
   end
 
   private
