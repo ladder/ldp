@@ -1,22 +1,15 @@
 require 'bundler/setup'
 require 'ladder'
-#require 'rack/ldp'
-#require 'rdf/mongo'
+require 'rdf/mongo'
 require 'benchmark'
 
 task :benchmark do
   include Benchmark
 
   # RDF::Repository: 4.3s
-  # Ladder::Repository
-  #   (noop): 28.5s
-  #   (ttl): 224.9s
-  #   (json-ld w/ OJ): 81.4s
-  #   (json-ld): 74.25s
-  #   (json-ld, standard_prefixes: true): > 365s
-  # ActiveTriples source.attributes:
+  # RDF::Mongo::Repository: 16.8s
 
-  REPOSITORY = Ladder::Repository.new
+  REPOSITORY = RDF::Mongo::Repository.new
   REPOSITORY.clear!
 
   TURTLE = File.open('etc/doap.ttl').read

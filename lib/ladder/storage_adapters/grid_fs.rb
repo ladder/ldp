@@ -43,7 +43,12 @@ class GridFSAdapter
   # @param [NonRDFSource] resource
   def initialize(resource)
     @filename = resource.subject_uri.path
-    @bucket = Mongoid.default_client.database.fs
+
+    # @bucket = Mongoid.default_client.database.fs
+    #
+    repository = resource.instance_variable_get('@data')
+    client = repository.instance_variable_get('@client')
+    @bucket = client.database.fs
   end
 
   ##
