@@ -1,15 +1,14 @@
 require 'bundler/setup'
-require 'ladder'
-require 'rdf/mongo'
 require 'benchmark'
+require 'ladder'
 
 task :benchmark do
   include Benchmark
 
-  # RDF::Repository: 4.3s
+  # RDF::Repository: 5.3s
   # RDF::Mongo::Repository: 16.8s
 
-  REPOSITORY = RDF::Mongo::Repository.new
+  REPOSITORY = RDF::Mongo::Repository.new(uri: 'mongodb://localhost:27017/benchmark')
   REPOSITORY.clear!
 
   TURTLE = File.open('etc/doap.ttl').read

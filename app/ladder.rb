@@ -1,12 +1,9 @@
-require 'pry' # for debugging
-
 require 'rack/ldp'
 require 'sinatra/base'
 require 'rdf/mongo'
 
-#require 'mongoid'
-#require_relative '../lib/ladder/repository'
-require_relative '../lib/ladder/non_rdf_source'
+require 'pry' # for debugging
+require_relative '../lib/ladder/non_rdf_source' # temporary
 
 module Ladder
   class LDP < Sinatra::Base
@@ -19,13 +16,10 @@ module Ladder
 
     # Set defaults in case user has not configured values
     configure do
-      # Use a class that implements the RDF::Repository interface
-      # set :repository, Ladder::Repository.new
-      set :repository, RDF::Mongo::Repository.new
-
-      options = { clients: { default: { database: 'ladder', hosts: ['localhost:27017'] } } }
-      #Mongoid.load_configuration(options)
       Mongo::Logger.logger.level = Logger::INFO
+
+      # Use a class that implements the RDF::Repository interface
+      set :repository, RDF::Mongo::Repository.new(uri: 'mongodb://localhost:27017/ladder')
     end
 
     get '/*' do

@@ -1,4 +1,13 @@
 GIT
+  remote: https://github.com/ladder/rdf-mongo.git
+  revision: 73e2e6d168f42a61c4055c2b6a3fb2c4920defe4
+  branch: develop
+  specs:
+    rdf-mongo (2.0.0)
+      mongo (~> 2.2)
+      rdf (~> 2.0)
+
+GIT
   remote: https://github.com/ruby-rdf/rdf-ldp.git
   revision: a5b2f8c6d4af621e8b206c2f16bd0f4119e828ff
   branch: develop
@@ -111,9 +120,6 @@ GEM
       nokogiri (~> 1.6)
       rdf (~> 2.0)
       rdf-xsd (~> 2.0)
-    rdf-mongo (2.0.0)
-      mongo (~> 2.2)
-      rdf (~> 2.0)
     rdf-n3 (2.0.0)
       rdf (~> 2.0)
     rdf-rdfa (2.0.0)
@@ -208,6 +214,7 @@ DEPENDENCIES
   pry
   rake
   rdf-ldp!
+  rdf-mongo!
   rspec
   yard
 
