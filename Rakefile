@@ -8,8 +8,14 @@ task :benchmark do
   # RDF::Repository: 5.3s
   # RDF::Mongo::Repository: 16.8s
 
-  REPOSITORY = RDF::Mongo::Repository.new(uri: 'mongodb://localhost:27017/benchmark')
+  REPOSITORY = Ladder::LDP.settings.repository
   REPOSITORY.clear!
+
+  # clear out old entries
+  storage = GridFSAdapter.new(RDF::LDP::NonRDFSource.new(RDF::URI.new('http://example.org/testing'), REPOSITORY))
+  bucket = storage.instance_variable_get('@bucket')
+  bucket.instance_variable_get('@files_collection').delete_many
+  bucket.instance_variable_get('@chunks_collection').delete_many
 
   TURTLE = File.open('etc/doap.ttl').read
 

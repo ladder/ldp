@@ -94,6 +94,7 @@ class GridFSAdapter
   ##
   # This will remove all revisions of the file and corresponding
   # chunks in the collection.
+  # @return [Boolean] whether anything was deleted
   def delete
     files = @bucket.find(filename: @filename)
     return false if files.count == 0
