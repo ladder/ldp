@@ -27,7 +27,7 @@
 #
 # @example writing to a `StorageAdapter`
 #   storage = StorageAdapter.new(an_nr_source)
-#   storage.io { |io| io.write('moomin')
+#   storage.io { |io| io.write('moomin') }
 #
 # Beyond this interface, implementations are permitted to behave as desired.
 # They may, for instance, reject undesirable content or alter the graph (or
@@ -42,6 +42,7 @@ class GridFSAdapter
   #
   # @param [NonRDFSource] resource
   def initialize(resource)
+    raise ArgumentError, "non-absolute URI: #{resource.subject_uri}" unless resource.subject_uri.absolute?
     @filename = resource.subject_uri.path
 
     repository = resource.instance_variable_get('@data')
@@ -55,7 +56,7 @@ class GridFSAdapter
   #
   # @return [GridFSAdapter] an instance of GridFSAdapter
   def io(&block)
-    return yield(self) if block_given?
+    yield(self) if block_given?
     close_stream
     self
   end
@@ -95,11 +96,15 @@ class GridFSAdapter
   # chunks in the collection.
   def delete
     files = @bucket.find(filename: @filename)
-    raise Mongo::Error::FileNotFound.new(@filename, :path) if files.count == 0
+    return false if files.count == 0
 
-    ids = files.map(&:extract_id)
+    # https://github.com/mongoid/mongoid/blob/master/lib/mongoid/extensions/hash.rb#L90-L92
+    ids = files.map { |hash| hash["_id"] || hash["id"] || hash[:id] || hash[:_id] }
+
     @bucket.files_collection.delete_many(_id: {'$in' => ids})
     @bucket.chunks_collection.delete_many(files_id: {'$in' => ids})
+
+    true
   end
 
   private
