@@ -42,7 +42,7 @@ class GridFSAdapter
   #
   # @param [NonRDFSource] resource
   def initialize(resource)
-    raise ArgumentError, "non-absolute URI: #{resource.subject_uri}" unless resource.subject_uri.absolute?
+    raise ArgumentError, "non-parented URI: #{resource.subject_uri}" unless resource.subject_uri.has_parent?
     @filename = resource.subject_uri.path
 
     repository = resource.instance_variable_get('@data')
