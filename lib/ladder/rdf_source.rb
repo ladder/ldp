@@ -1,9 +1,9 @@
-require 'ladder/graph_index'
+require 'ladder/index/graph'
 
 module RDF::LDP
   class RDFSource
     def initialize(subject_uri, data = RDF::Repository.new)
-      @index = ::Ladder::GraphIndex.new
+      @index = ::Ladder::Index::Graph.new
       @index.create_index!
       super
     end

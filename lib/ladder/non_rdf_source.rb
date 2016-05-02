@@ -1,4 +1,4 @@
-require_relative 'storage_adapters/grid_fs'
+require 'ladder/storage_adapters/grid_fs'
 
 module RDF::LDP
   class NonRDFSource < Resource

@@ -7,11 +7,16 @@ task :benchmark do
 
   # RDF::Repository: 5.3s
   # RDF::Mongo::Repository: 16.8s
+  # RDF::Mongo::Repository + Elasticsearch (sync): 25s
 
   REPOSITORY = Ladder::LDP.settings.repository
   REPOSITORY.clear!
 
-  # clear out old entries
+  # clear index
+  require 'elasticsearch'
+  Elasticsearch::Client.new.indices.delete(index: '_all')
+
+  # clear out old file entries
   storage = GridFSAdapter.new(RDF::LDP::NonRDFSource.new(RDF::URI.new('http://example.org/testing'), REPOSITORY))
   bucket = storage.instance_variable_get('@bucket')
   bucket.instance_variable_get('@files_collection').delete_many
