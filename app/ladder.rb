@@ -3,7 +3,8 @@ require 'sinatra/base'
 require 'rdf/mongo'
 
 require 'pry' # for debugging
-require_relative '../lib/ladder/non_rdf_source' # temporary
+require_relative '../lib/ladder/non_rdf_source'
+require_relative '../lib/ladder/rdf_source.rb'
 
 module Ladder
   class LDP < Sinatra::Base
