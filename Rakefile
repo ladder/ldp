@@ -5,19 +5,18 @@ require 'ladder'
 task :benchmark do
   include Benchmark
 
-  # RDF::Repository: 5.3s
-  # RDF::Mongo::Repository: 10.6s
-  # RDF::Mongo::GraphRepository: 13.3s
-  # RDF::Mongoid::Repository:
-  # RDF::Mongo::Repository + Elasticsearch (sync): 17.6s
+  # RDF::Repository: 6s
+  # RDF::Mongo::Repository: 18s
+  # RDF::Mongo::Repository + Mongoid::Graph: 19s
+  # RDF::Mongo::GraphRepository: 24s
+  # RDF::Mongoid::Repository: 23s
 
   # clear repository
   REPOSITORY = Ladder::LDP.settings.repository
-  REPOSITORY.clear!
 
-  # clear index
-  require 'elasticsearch'
-  Elasticsearch::Client.new.indices.delete(index: '_all')
+  mongoid_opts = { clients: { default: { uri: REPOSITORY.uri } } }
+  ::Mongoid.load_configuration(mongoid_opts)
+  ::Mongo::Logger.level = Logger::FATAL
 
   TURTLE = File.open('etc/doap.ttl').read
 

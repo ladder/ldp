@@ -3,12 +3,13 @@ require 'sinatra/base'
 
 # repository types
 require 'rdf/mongo'
+#require 'rdf/mongo/graph_repository'
 require 'rdf/mongoid'
 
 # for debugging
 require 'pry'
 
-#require_relative '../lib/ladder/rdf_source'
+require_relative '../lib/ladder/rdf_source'
 #require_relative '../lib/ladder/non_rdf_source'
 
 module Ladder

@@ -8,7 +8,7 @@ require 'ladder'
 
 # clear repository
 REPOSITORY = Ladder::LDP.settings.repository
-REPOSITORY.clear if REPOSITORY.respond_to? :clear
+REPOSITORY.clear!
 
 Dir['./spec/support/**/*.rb'].each { |f| require f }
 

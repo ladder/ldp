@@ -11,6 +11,7 @@ module RDF::LDP
       end
 
       [self.graph, self.metagraph].each do |g|
+        RDF::Mongoid::Statement.store_in(database: @data.collection.database.name, collection: @data.collection.name)
         RDF::Mongoid::Graph.find_or_create_by(RDF::Mongo::Conversion.to_mongo(g.name, :graph_name)) unless g.empty?
       end
 
@@ -27,6 +28,7 @@ module RDF::LDP
       end
 
       [self.graph, self.metagraph].each do |g|
+        RDF::Mongoid::Statement.store_in(database: @data.collection.database.name, collection: @data.collection.name)
         RDF::Mongoid::Graph.where(RDF::Mongo::Conversion.to_mongo(g.name, :graph_name)).first_or_initialize.save unless g.empty?
       end
 
@@ -39,7 +41,8 @@ module RDF::LDP
       end
 
       [self.graph, self.metagraph].each do |g|
-        RDF::Mongoid::Graph.where(RDF::Mongo::Conversion.to_mongo(g.name, :graph_name)).delete
+        RDF::Mongoid::Statement.store_in(database: @data.collection.database.name, collection: @data.collection.name)
+        RDF::Mongoid::Graph.where(RDF::Mongo::Conversion.to_mongo(g.name, :graph_name)).destroy
       end
 
       self
