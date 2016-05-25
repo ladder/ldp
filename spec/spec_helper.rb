@@ -8,7 +8,7 @@ require 'ladder'
 
 # clear repository
 REPOSITORY = Ladder::LDP.settings.repository
-REPOSITORY.client.database.drop
+REPOSITORY.clear if REPOSITORY.respond_to? :clear
 
 # clear index
 require 'elasticsearch'
