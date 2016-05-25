@@ -108,6 +108,13 @@ class GridFSAdapter
     true
   end
 
+  ##
+  # Remove all files and revisions
+  def clear!
+    @bucket.files_collection.delete_many
+    @bucket.chunks_collection.delete_many
+  end
+
   private
 
   def close_stream
