@@ -1,12 +1,14 @@
 require 'rdf/mongoid'
 
 module RDF::LDP
-  class RDFSource
+  class RDFSource < Resource
     def initialize(subject_uri, data = Ladder::LDP.settings.repository)
+
       # FIXME: check for proper repository type
       if data.respond_to? :collection
         RDF::Mongoid::Statement.store_in(database: data.collection.database.name, collection: data.collection.name)
       end
+
       super
     end
 

@@ -2,7 +2,7 @@ require 'ladder/storage_adapters/grid_fs'
 
 module RDF::LDP
   class NonRDFSource < Resource
-    def initialize(subject_uri, data = RDF::Repository.new)
+    def initialize(subject_uri, data = Ladder::LDP.settings.repository)
 
       # TODO
       # unless data.respond_to? :client
@@ -15,7 +15,6 @@ module RDF::LDP
       # @return [Mongo::Collection]
       # attr_reader :collection
 
-      data = Ladder::LDP.settings.repository #unless data.is_a? RDF::Mongo::Repository
       super
     end
 
