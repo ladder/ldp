@@ -2,6 +2,14 @@ require 'rdf/mongoid'
 
 module RDF::LDP
   class RDFSource
+    def initialize(subject_uri, data = Ladder::LDP.settings.repository)
+      # FIXME: check for proper repository type
+      if data.respond_to? :collection
+        RDF::Mongoid::Statement.store_in(database: data.collection.database.name, collection: data.collection.name)
+      end
+      super
+    end
+
     def create(input, content_type, &block)
       statements = parse_graph(input, content_type)
 
@@ -11,7 +19,6 @@ module RDF::LDP
       end
 
       [self.graph, self.metagraph].each do |g|
-        RDF::Mongoid::Statement.store_in(database: @data.collection.database.name, collection: @data.collection.name)
         RDF::Mongoid::Graph.find_or_create_by(RDF::Mongo::Conversion.to_mongo(g.name, :graph_name)) unless g.empty?
       end
 
@@ -28,7 +35,6 @@ module RDF::LDP
       end
 
       [self.graph, self.metagraph].each do |g|
-        RDF::Mongoid::Statement.store_in(database: @data.collection.database.name, collection: @data.collection.name)
         RDF::Mongoid::Graph.where(RDF::Mongo::Conversion.to_mongo(g.name, :graph_name)).first_or_initialize.save unless g.empty?
       end
 
@@ -41,7 +47,6 @@ module RDF::LDP
       end
 
       [self.graph, self.metagraph].each do |g|
-        RDF::Mongoid::Statement.store_in(database: @data.collection.database.name, collection: @data.collection.name)
         RDF::Mongoid::Graph.where(RDF::Mongo::Conversion.to_mongo(g.name, :graph_name)).destroy
       end
 

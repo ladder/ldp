@@ -10,6 +10,10 @@ require 'ladder'
 REPOSITORY = Ladder::LDP.settings.repository
 REPOSITORY.clear!
 
+mongoid_opts = { clients: { default: { uri: REPOSITORY.uri } } }
+::Mongoid.load_configuration(mongoid_opts)
+::Mongo::Logger.level = Logger::FATAL
+
 Dir['./spec/support/**/*.rb'].each { |f| require f }
 
 RSpec.configure do |config|
