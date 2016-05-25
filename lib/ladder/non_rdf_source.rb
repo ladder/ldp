@@ -1,7 +1,7 @@
 require 'ladder/storage_adapters/grid_fs'
 
 module RDF::LDP
-  class NonRDFSource < Resource
+  class NonRDFSource
     def initialize(subject_uri, data = Ladder::LDP.settings.repository)
 
       # TODO

@@ -1,7 +1,7 @@
 require 'rdf/mongoid'
 
 module RDF::LDP
-  class RDFSource < Resource
+  class RDFSource
     def initialize(subject_uri, data = Ladder::LDP.settings.repository)
 
       # FIXME: check for proper repository type
