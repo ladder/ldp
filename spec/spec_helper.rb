@@ -4,13 +4,15 @@ require 'linkeddata'
 require 'rdf/ldp'
 require 'rdf/spec'
 require 'rdf/spec/matchers'
+require 'ladder'
 
-require 'pry' # for debugging
+# clear repository
+REPOSITORY = Ladder::LDP.settings.repository
+REPOSITORY.client.database.drop
 
-require_relative '../lib/ladder/rdf_source.rb'
+# clear index
+require 'elasticsearch'
 Elasticsearch::Client.new.indices.delete(index: '_all')
-require 'mongo'
-Mongo::Client.new('mongodb://localhost:27017/ladder').database.drop
 
 Dir['./spec/support/**/*.rb'].each { |f| require f }
 

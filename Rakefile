@@ -6,21 +6,18 @@ task :benchmark do
   include Benchmark
 
   # RDF::Repository: 5.3s
-  # RDF::Mongo::Repository: 16.8s
-  # RDF::Mongo::Repository + Elasticsearch (sync): 25s
+  # RDF::Mongo::Repository: 10.6s
+  # RDF::Mongo::GraphRepository: 13.3s
+  # RDF::Mongoid::Repository:
+  # RDF::Mongo::Repository + Elasticsearch (sync): 17.6s
 
+  # clear repository
   REPOSITORY = Ladder::LDP.settings.repository
   REPOSITORY.clear!
 
   # clear index
   require 'elasticsearch'
   Elasticsearch::Client.new.indices.delete(index: '_all')
-
-  # clear out old file entries
-  storage = GridFSAdapter.new(RDF::LDP::NonRDFSource.new(RDF::URI.new('http://example.org/testing'), REPOSITORY))
-  bucket = storage.instance_variable_get('@bucket')
-  bucket.instance_variable_get('@files_collection').delete_many
-  bucket.instance_variable_get('@chunks_collection').delete_many
 
   TURTLE = File.open('etc/doap.ttl').read
 
