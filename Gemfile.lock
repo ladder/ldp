@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/ruby-rdf/rdf-ldp.git
-  revision: a5b2f8c6d4af621e8b206c2f16bd0f4119e828ff
+  revision: f84eaf49277cd4d32b1296a3294bee1c3fe8b606
   branch: develop
   specs:
     rdf-ldp (0.6.0)
@@ -13,6 +13,14 @@ GIT
       rdf-turtle
       rdf-vocab (~> 2.0)
       sinatra (~> 1.4)
+
+PATH
+  remote: ../rdf-mongo
+  specs:
+    rdf-mongo (2.0.0)
+      mongo (~> 2.2)
+      mongoid (~> 5.1)
+      rdf (~> 2.0)
 
 PATH
   remote: .
@@ -64,11 +72,11 @@ GEM
       elasticsearch-transport (= 1.0.17)
     elasticsearch-api (1.0.17)
       multi_json
-    elasticsearch-model (0.1.8)
+    elasticsearch-model (0.1.9)
       activesupport (> 3)
       elasticsearch (> 0.4)
       hashie
-    elasticsearch-persistence (0.1.8)
+    elasticsearch-persistence (0.1.9)
       activemodel (> 3)
       activesupport (> 3)
       elasticsearch (> 0.4)
@@ -129,14 +137,20 @@ GEM
       sparql-client (~> 2.0)
     method_source (0.8.2)
     mini_portile2 (2.0.0)
-    minitest (5.8.4)
+    minitest (5.9.0)
     mongo (2.2.5)
       bson (~> 4.0)
-    multi_json (1.11.3)
+    mongoid (5.1.3)
+      activemodel (~> 4.0)
+      mongo (~> 2.1)
+      origin (~> 2.2)
+      tzinfo (>= 0.3.37)
+    multi_json (1.12.1)
     multipart-post (2.0.0)
     net-http-persistent (2.9.4)
     nokogiri (1.6.7.2)
       mini_portile2 (~> 2.0.0.rc2)
+    origin (2.2.0)
     pry (0.10.3)
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
@@ -164,9 +178,6 @@ GEM
       nokogiri (~> 1.6)
       rdf (~> 2.0)
       rdf-xsd (~> 2.0)
-    rdf-mongo (2.0.0)
-      mongo (~> 2.2)
-      rdf (~> 2.0)
     rdf-n3 (2.0.0)
       rdf (~> 2.0)
     rdf-rdfa (2.0.0)
@@ -207,7 +218,7 @@ GEM
     rdf-turtle (2.0.0)
       ebnf (~> 1.0, >= 1.0.1)
       rdf (~> 2.0)
-    rdf-vocab (2.0.0)
+    rdf-vocab (2.0.1)
       rdf (~> 2.0)
     rdf-xsd (2.0.0)
       rdf (~> 2.0)
@@ -247,7 +258,7 @@ GEM
     sxp (1.0.0)
       rdf (~> 2.0)
     thread_safe (0.3.5)
-    tilt (2.0.2)
+    tilt (2.0.4)
     timecop (0.8.1)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
@@ -271,9 +282,10 @@ DEPENDENCIES
   rack-test
   rake
   rdf-ldp!
+  rdf-mongo!
   rspec
   timecop
   yard
 
 BUNDLED WITH
-   1.12.0
+   1.12.4
