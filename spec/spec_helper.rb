@@ -10,10 +10,6 @@ require 'ladder'
 REPOSITORY = Ladder::LDP.settings.repository
 REPOSITORY.clear if REPOSITORY.respond_to? :clear
 
-# clear index
-require 'elasticsearch'
-Elasticsearch::Client.new.indices.delete(index: '_all')
-
 Dir['./spec/support/**/*.rb'].each { |f| require f }
 
 RSpec.configure do |config|
