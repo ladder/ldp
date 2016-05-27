@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'rack/test'
+
 require 'ladder'
 
 describe 'ladder' do

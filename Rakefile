@@ -13,10 +13,7 @@ task :benchmark do
 
   # clear repository
   REPOSITORY = Ladder::LDP.settings.repository
-
-  mongoid_opts = { clients: { default: { uri: REPOSITORY.uri } } }
-  ::Mongoid.load_configuration(mongoid_opts)
-  ::Mongo::Logger.level = Logger::FATAL
+  REPOSITORY.clear!
 
   TURTLE = File.open('etc/doap.ttl').read
 
