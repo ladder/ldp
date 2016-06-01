@@ -1,12 +1,14 @@
 require 'rack/ldp'
 require 'sinatra/base'
 require 'rdf/mongo'
+# TODO: to remove
 require 'mongoid'
 
 # for debugging
 require 'pry'
 
-# require_relative '../lib/ladder/rdf_source'
+require_relative '../lib/ladder/rdf_source'
+require_relative '../lib/ladder/resource'
 # require_relative '../lib/ladder/non_rdf_source'
 
 module Ladder
@@ -27,6 +29,7 @@ module Ladder
       set :repository, RDF::Mongo::Repository.new(uri: uri)
 
       # Configuration settings for Mongoid
+      # TODO: move to rdf_source.rb?
       Mongoid.load_configuration({ clients: { default: { uri: uri } } })
     end
 

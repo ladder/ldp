@@ -1,58 +1,36 @@
-require 'rdf/mongoid'
+module Ladder
+  class Statement
+    include ::Mongoid::Document
 
-module RDF::LDP
-  class RDFSource
-    def initialize(subject_uri, data = Ladder::LDP.settings.repository)
+    # Use the same field names as RDF::Mongo::Conversion
+    %i(s st p pt o ot ol c ct).each { |key| field key }
 
-      # FIXME: check for proper repository type
-      if data.respond_to? :collection
-        RDF::Mongoid::Statement.store_in(database: data.collection.database.name, collection: data.collection.name)
-      end
+    index({s: 1})
+    index({p: 1})
+    index({o: 'hashed'})
+    index({c: 1})
+    index({s: 1, p: 1})
+    index({s: 1, p: 1, o: 1})
+  end
+end
 
-      super
-    end
+module Ladder
+  class Graph
+    include ::Mongoid::Document
 
-    def create(input, content_type, &block)
-      statements = parse_graph(input, content_type)
+    field :c
+    field :ct, default: :default
+    field :statements, type: Array
 
-      super do |transaction|
-        transaction.insert(statements)
-        yield transaction if block_given?
-      end
+    index({c: 1})
+    index({ct: 1})
 
-      [self.graph, self.metagraph].each do |g|
-        RDF::Mongoid::Graph.find_or_create_by(RDF::Mongo::Conversion.to_mongo(g.name, :graph_name)) unless g.empty?
-      end
+    store_in collection: 'graphs'
 
-      self
-    end
+    before_save { project_graph if changed? }
 
-    def update(input, content_type, &block)
-      statements = parse_graph(input, content_type)
-
-      super do |transaction|
-        transaction.delete(RDF::Statement(nil, nil, nil, graph_name: subject_uri))
-        transaction.insert statements
-        yield transaction if block_given?
-      end
-
-      [self.graph, self.metagraph].each do |g|
-        RDF::Mongoid::Graph.where(RDF::Mongo::Conversion.to_mongo(g.name, :graph_name)).first_or_initialize.save unless g.empty?
-      end
-
-      self
-    end
-
-    def destroy(&block)
-      super do |tx|
-        tx.delete(RDF::Statement(nil, nil, nil, graph_name: subject_uri))
-      end
-
-      [self.graph, self.metagraph].each do |g|
-        RDF::Mongoid::Graph.where(RDF::Mongo::Conversion.to_mongo(g.name, :graph_name)).destroy
-      end
-
-      self
+    def project_graph
+      self.statements = Ladder::Statement.where({c: self.c, ct: self.ct}).map { |s| s.attributes }
     end
   end
 end
