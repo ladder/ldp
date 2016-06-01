@@ -1,16 +1,14 @@
 require 'rack/ldp'
 require 'sinatra/base'
 require 'rdf/mongo'
-=begin
-# repository types
-require 'rdf/mongoid'
+require 'mongoid'
 
 # for debugging
 require 'pry'
 
-require_relative '../lib/ladder/rdf_source'
-require_relative '../lib/ladder/non_rdf_source'
-=end
+# require_relative '../lib/ladder/rdf_source'
+# require_relative '../lib/ladder/non_rdf_source'
+
 module Ladder
   class LDP < Sinatra::Base
 
@@ -25,7 +23,11 @@ module Ladder
       Mongo::Logger.level = Logger::DEBUG
 
       # Use a class that implements the RDF::Repository interface
-      set :repository, RDF::Mongo::Repository.new(uri: 'mongodb://localhost:27017/ladder')
+      set :uri, 'mongodb://localhost:27017/ladder'
+      set :repository, RDF::Mongo::Repository.new(uri: uri)
+
+      # Configuration settings for Mongoid
+      Mongoid.load_configuration({ clients: { default: { uri: uri } } })
     end
 
     get '/*' do
