@@ -33,9 +33,11 @@ module Ladder
       self.statements = Ladder::Statement.where({c: self.c, ct: self.ct}).map { |s| s.attributes }
     end
   end
+end
 
-  class RDFSource < RDF::LDP::RDFSource
-    def initialize(subject_uri, data = nil)
+module RDF::LDP
+  class RDFSource
+    def initialize(subject_uri, data = RDF::Repository.new)
       super
 
       # Configuration settings for Mongoid
@@ -76,4 +78,5 @@ module Ladder
     end
 
   end
+
 end

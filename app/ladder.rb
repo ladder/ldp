@@ -1,7 +1,9 @@
 require 'rack/ldp'
 require 'sinatra/base'
 require 'rdf/mongo'
-require 'ladder/resource'
+
+require 'ladder/rdf_source'
+require 'ladder/non_rdf_source'
 
 # for debugging
 require 'pry'

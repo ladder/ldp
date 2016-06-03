@@ -45,7 +45,7 @@ class GridFSAdapter
     raise ArgumentError, "non-parented URI: #{resource.subject_uri}" unless resource.subject_uri.has_parent?
     @filename = resource.subject_uri.path
 
-    # FIXME: should this go in Ladder::NonRDFSource#initialize?
+    # FIXME: should this go in (patched) NonRDFSource#initialize?
     repository = Ladder::LDP.settings.repository
     #repository = resource.instance_variable_get('@data')
 
@@ -78,10 +78,14 @@ class GridFSAdapter
     chunk_size = string.length
 
     # open an upload stream
-    @stream ||= @bucket.open_upload_stream(@filename, chunk_size: chunk_size)
+    @stream = @bucket.open_upload_stream(@filename, chunk_size: chunk_size)
     @stream.write(string)
 
     chunk_size
+  end
+
+  def file_exists?
+    @bucket.find(filename: @filename).count > 0
   end
 
   ##
@@ -91,7 +95,12 @@ class GridFSAdapter
   def each(&block)
     # open a download stream
     @stream ||= @bucket.open_download_stream_by_name(@filename)
-    @stream.each &block
+
+    block_given? ? @stream.each(&block) : @stream.to_a
+  end
+
+  def to_a
+    self.each
   end
 
   ##

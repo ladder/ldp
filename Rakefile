@@ -8,8 +8,6 @@ task :benchmark do
   # RDF::Repository: 6s
   # RDF::Mongo::Repository: 18s
   # RDF::Mongo::Repository + Mongoid::Graph: 19s
-  # RDF::Mongo::GraphRepository: 24s
-  # RDF::Mongoid::Repository: 23s
 
   # clear repository
   REPOSITORY = Ladder::LDP.settings.repository
