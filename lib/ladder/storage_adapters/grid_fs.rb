@@ -45,7 +45,10 @@ class GridFSAdapter
     raise ArgumentError, "non-parented URI: #{resource.subject_uri}" unless resource.subject_uri.has_parent?
     @filename = resource.subject_uri.path
 
-    repository = resource.instance_variable_get('@data')
+    # FIXME: should this go in Ladder::NonRDFSource#initialize?
+    repository = Ladder::LDP.settings.repository
+    #repository = resource.instance_variable_get('@data')
+
     client = repository.instance_variable_get('@client')
     @bucket = client.database.fs
   end
