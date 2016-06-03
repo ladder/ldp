@@ -1,6 +1,8 @@
+require 'mongoid'
+
 module Ladder
   class Statement
-    include ::Mongoid::Document
+    include Mongoid::Document
 
     # Use the same field names as RDF::Mongo::Conversion
     %i(s st p pt o ot ol c ct).each { |key| field key }
@@ -12,11 +14,9 @@ module Ladder
     index({s: 1, p: 1})
     index({s: 1, p: 1, o: 1})
   end
-end
 
-module Ladder
   class Graph
-    include ::Mongoid::Document
+    include Mongoid::Document
 
     field :c
     field :ct, default: :default
@@ -32,5 +32,48 @@ module Ladder
     def project_graph
       self.statements = Ladder::Statement.where({c: self.c, ct: self.ct}).map { |s| s.attributes }
     end
+  end
+
+  class RDFSource < RDF::LDP::RDFSource
+    def initialize(subject_uri, data = nil)
+      super
+
+      # Configuration settings for Mongoid
+      Mongoid.load_configuration({ clients: { default: { uri: Ladder::LDP.settings.uri } } }) unless Mongoid.configured?
+
+      data = Ladder::LDP.settings.repository
+      Ladder::Statement.store_in(database: data.collection.database.name, collection: data.collection.name)
+    end
+
+    def create(input, content_type, &block)
+      super
+
+      [self.graph, self.metagraph].each do |g|
+        Ladder::Graph.find_or_create_by(RDF::Mongo::Conversion.to_mongo(g.name, :graph_name)) unless g.empty?
+      end
+
+      self
+    end
+
+    def update(input, content_type, &block);
+      super
+
+      [self.graph, self.metagraph].each do |g|
+        Ladder::Graph.where(RDF::Mongo::Conversion.to_mongo(g.name, :graph_name)).first_or_initialize.save unless g.empty?
+      end
+
+      self
+    end
+
+    def destroy(&block)
+      super
+
+      [self.graph, self.metagraph].each do |g|
+        Ladder::Graph.where(RDF::Mongo::Conversion.to_mongo(g.name, :graph_name)).destroy
+      end
+
+      self
+    end
+
   end
 end
