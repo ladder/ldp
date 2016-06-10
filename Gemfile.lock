@@ -14,6 +14,15 @@ GIT
       rdf-vocab (~> 2.0)
       sinatra (~> 1.4)
 
+GIT
+  remote: https://github.com/ruby-rdf/rdf-mongo.git
+  revision: 4ad99a89bfaed07ff03e4f5da89bfb279c27b9e6
+  branch: develop
+  specs:
+    rdf-mongo (2.0.0)
+      mongo (~> 2.2)
+      rdf (~> 2.0)
+
 PATH
   remote: .
   specs:
@@ -131,9 +140,6 @@ GEM
       nokogiri (~> 1.6)
       rdf (~> 2.0)
       rdf-xsd (~> 2.0)
-    rdf-mongo (2.0.0)
-      mongo (~> 2.2)
-      rdf (~> 2.0)
     rdf-n3 (2.0.0)
       rdf (~> 2.0)
     rdf-rdfa (2.0.0)
@@ -233,9 +239,10 @@ DEPENDENCIES
   rack-test
   rake
   rdf-ldp!
+  rdf-mongo!
   rspec
   timecop
   yard
 
 BUNDLED WITH
-   1.12.4
+   1.12.5
