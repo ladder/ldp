@@ -22,6 +22,8 @@ describe RDF::LDP::DirectContainer do
 
   describe '#add' do
     let(:resource_uri) { RDF::URI('http://ex.org/too-ticky') }
+    let(:repo) { Ladder::LDP.settings.repository }
+    before { repo.clear! }
 
     it 'raises an error if the membership resource does not exist' do
       expect { subject.add(resource_uri) }
@@ -38,9 +40,8 @@ describe RDF::LDP::DirectContainer do
       end
 
       it 'adds membership triple to custom membership resource' do
-        repo = RDF::Repository.new
         subject = described_class.new(uri, repo)
-        mem_rs = RDF::LDP::RDFSource.new(RDF::URI('http://ex.org/mymble'), 
+        mem_rs = RDF::LDP::RDFSource.new(RDF::URI('http://ex.org/mymble'),
                                          repo)
 
         g = RDF::Graph.new << RDF::Statement(subject.subject_uri,
@@ -57,7 +58,6 @@ describe RDF::LDP::DirectContainer do
       end
 
       it 'adds membership triple to membership resource with #fragment' do
-        repo = RDF::Repository.new
         subject = described_class.new(uri, repo)
 
         mem_rs = subject.subject_uri / '#membership'

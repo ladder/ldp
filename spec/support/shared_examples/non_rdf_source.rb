@@ -5,7 +5,9 @@ shared_examples 'a NonRDFSource' do
   let(:uri) { RDF::URI 'http://example.org/moomin' }
 
   let(:contents) { StringIO.new('mummi') }
-  
+  let(:repo) { Ladder::LDP.settings.repository }
+  before { repo.clear! }
+
   after { subject.destroy }
 
   describe '#non_rdf_source?' do
@@ -25,7 +27,6 @@ shared_examples 'a NonRDFSource' do
     end
 
     it 'persists to resource' do
-      repo = RDF::Repository.new
       saved = described_class.new(uri, repo)
 
       saved.create(contents, 'text/plain')
@@ -36,7 +37,6 @@ shared_examples 'a NonRDFSource' do
     end
 
     it 'creates an LDP::RDFSource' do
-      repo = RDF::Repository.new
       saved = described_class.new(uri, repo)
       description = RDF::LDP::RDFSource.new(subject.description_uri, repo)
 
