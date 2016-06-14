@@ -93,6 +93,9 @@ class GridFSAdapter
   #
   # @param [Proc] a block which iterates over the returned chunks.
   def each(&block)
+    # write the file if it doesn't exist
+    return self.write block.call if 0 == @bucket.find(filename: @filename).count
+
     # open a download stream
     @stream ||= @bucket.open_download_stream_by_name(@filename)
 
@@ -109,7 +112,7 @@ class GridFSAdapter
   # @return [Boolean] whether anything was deleted
   def delete
     files = @bucket.find(filename: @filename)
-    return false if files.count == 0
+    return false if 0 == files.count
 
     # https://github.com/mongoid/mongoid/blob/master/lib/mongoid/extensions/hash.rb#L90-L92
     ids = files.map { |hash| hash["_id"] || hash["id"] || hash[:id] || hash[:_id] }

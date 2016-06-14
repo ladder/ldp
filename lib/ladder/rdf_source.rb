@@ -48,7 +48,11 @@ module RDF::LDP
     end
 
     def create(input, content_type, &block)
-      super
+      super do |transaction|
+        statements = parse_graph(input, content_type)
+        transaction.insert(statements)
+        yield transaction if block_given?
+      end
 
       [self.graph, self.metagraph].each do |g|
         Ladder::Graph.find_or_create_by(RDF::Mongo::Conversion.to_mongo(g.name, :graph_name)) unless g.empty?
@@ -57,8 +61,12 @@ module RDF::LDP
       self
     end
 
-    def update(input, content_type, &block);
-      super
+    def update(input, content_type, &block)
+      super do |transaction|
+        transaction.delete(RDF::Statement(nil, nil, nil, graph_name: subject_uri))
+        transaction.insert parse_graph(input, content_type)
+        yield transaction if block_given?
+      end
 
       [self.graph, self.metagraph].each do |g|
         Ladder::Graph.where(RDF::Mongo::Conversion.to_mongo(g.name, :graph_name)).first_or_initialize.save unless g.empty?
@@ -68,7 +76,9 @@ module RDF::LDP
     end
 
     def destroy(&block)
-      super
+      super do |tx|
+        tx.delete(RDF::Statement(nil, nil, nil, graph_name: subject_uri))
+      end
 
       [self.graph, self.metagraph].each do |g|
         Ladder::Graph.where(RDF::Mongo::Conversion.to_mongo(g.name, :graph_name)).destroy
