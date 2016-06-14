@@ -14,28 +14,26 @@ GIT
       rdf-vocab (~> 2.0)
       sinatra (~> 1.4)
 
-PATH
-  remote: ../rdf-mongo
+GIT
+  remote: https://github.com/ruby-rdf/rdf-mongo.git
+  revision: 4ad99a89bfaed07ff03e4f5da89bfb279c27b9e6
+  branch: develop
   specs:
     rdf-mongo (2.0.0)
       mongo (~> 2.2)
-      mongoid (~> 5.1)
       rdf (~> 2.0)
 
 PATH
   remote: .
   specs:
     ladder-ldp (0.5.0)
-      activejob
+      mongoid
       rdf-ldp
       rdf-mongo
 
 GEM
   remote: https://rubygems.org/
   specs:
-    activejob (4.2.6)
-      activesupport (= 4.2.6)
-      globalid (>= 0.3.0)
     activemodel (4.2.6)
       activesupport (= 4.2.6)
       builder (~> 3.1)
@@ -60,8 +58,6 @@ GEM
       sxp (~> 1.0)
     equivalent-xml (0.6.0)
       nokogiri (>= 1.4.3)
-    globalid (0.3.6)
-      activesupport (>= 4.1.0)
     haml (4.0.7)
       tilt
     hamster (3.0.0)
@@ -249,4 +245,4 @@ DEPENDENCIES
   yard
 
 BUNDLED WITH
-   1.12.4
+   1.12.5

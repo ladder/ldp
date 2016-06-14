@@ -1,6 +1,6 @@
 shared_examples 'an RDFSource' do
   it_behaves_like 'a Resource'
-  
+
   let(:uri) { RDF::URI('http://ex.org/moomin') }
   subject { described_class.new('http://ex.org/moomin') }
   it { is_expected.to be_rdf_source }
@@ -18,22 +18,23 @@ shared_examples 'an RDFSource' do
     end
 
     describe 'parsing the graph' do
-      let(:graph) { RDF::Repository.new }
+      let(:graph) { Ladder::LDP.settings.repository }
 
       before do
-        graph << RDF::Statement(RDF::URI('http://ex.org/moomin'), 
-                                RDF.type, 
+        graph.clear!
+        graph << RDF::Statement(RDF::URI('http://ex.org/moomin'),
+                                RDF.type,
                                 RDF::Vocab::FOAF.Person,
                                 graph_name: subject.subject_uri)
 
         10.times do
           graph << RDF::Statement(RDF::Node.new,
-                                  RDF::Vocab::DC.creator, 
+                                  RDF::Vocab::DC.creator,
                                   RDF::Node.new,
                                   graph_name: subject.subject_uri)
         end
       end
- 
+
       it 'parses turtle' do
         expect(subject.send(:parse_graph, graph.dump(:ttl), 'text/turtle'))
           .to be_isomorphic_with graph
@@ -78,13 +79,13 @@ shared_examples 'an RDFSource' do
   describe '#create' do
     let(:subject) { described_class.new(RDF::URI('http://ex.org/m')) }
     let(:graph) { RDF::Graph.new }
-    
+
     it 'does not create when graph fails to parse' do
       begin; subject.create(graph.dump(:ttl), 'text/moomin'); rescue; end
 
       expect(subject).not_to exist
     end
-    
+
     it 'returns itself' do
       expect(subject.create(graph.dump(:ttl), 'text/turtle')).to eq subject
     end
@@ -98,19 +99,19 @@ shared_examples 'an RDFSource' do
       graph << RDF::Statement(RDF::URI(), RDF::Vocab::DC.title, 'moomin')
 
       expect(subject.create(graph.dump(:ttl), 'text/turtle').graph)
-        .to have_statement RDF::Statement(subject.subject_uri, 
-                                          RDF::Vocab::DC.title, 
+        .to have_statement RDF::Statement(subject.subject_uri,
+                                          RDF::Vocab::DC.title,
                                           'moomin')
     end
 
     it 'interprets Relatives URI as this based on this resource' do
-      graph << RDF::Statement(subject.subject_uri, 
-                              RDF::Vocab::DC.isPartOf, 
+      graph << RDF::Statement(subject.subject_uri,
+                              RDF::Vocab::DC.isPartOf,
                               RDF::URI('#moomin'))
-      
+
       expect(subject.create(graph.dump(:ttl), 'text/turtle').graph)
         .to have_statement RDF::Statement(subject.subject_uri,
-                                          RDF::Vocab::DC.isPartOf, 
+                                          RDF::Vocab::DC.isPartOf,
                                           subject.subject_uri / '#moomin')
     end
   end
@@ -122,7 +123,7 @@ shared_examples 'an RDFSource' do
 
     let(:graph) { RDF::Graph.new << statement }
     let(:content_type) { 'text/turtle' }
-    
+
     shared_examples 'updating rdf_sources' do
       it 'changes the response' do
         expect { subject.update(graph.dump(:ttl), content_type) }
@@ -146,19 +147,19 @@ shared_examples 'an RDFSource' do
         end
 
         it 'does not update #last_modified' do
-          modified = subject.last_modified 
+          modified = subject.last_modified
           begin; subject.update(graph.dump(:ttl), 'text/moomin'); rescue; end
           expect(subject.last_modified).to eq modified
         end
       end
     end
 
-    include_examples 'updating rdf_sources' 
+    include_examples 'updating rdf_sources'
 
     context 'when it exists' do
       before { subject.create('', 'application/n-triples') }
 
-      include_examples 'updating rdf_sources' 
+      include_examples 'updating rdf_sources'
     end
   end
 
@@ -186,7 +187,7 @@ shared_examples 'an RDFSource' do
         statement = RDF::Statement(subject.subject_uri, RDF::Vocab::FOAF.name, 'Moomin')
         patch = "@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .\n\n" \
                 "Add { #{statement.subject.to_base} " \
-                "#{statement.predicate.to_base} #{statement.object.to_base} } ." 
+                "#{statement.predicate.to_base} #{statement.object.to_base} } ."
         env = { 'CONTENT_TYPE' => 'text/ldpatch',
                 'rack.input'   => patch }
 
@@ -195,12 +196,12 @@ shared_examples 'an RDFSource' do
                .to(contain_exactly(statement))
       end
     end
-    
+
     context 'sparql update' do
       it 'raises BadRequest when invalid document' do
         env = { 'CONTENT_TYPE' => 'application/sparql-update',
                 'rack.input'   => '---invalid---' }
-        
+
         expect { subject.request(:patch, 200, {}, env) }
           .to raise_error RDF::LDP::BadRequest
       end
@@ -278,7 +279,7 @@ shared_examples 'an RDFSource' do
           .to change { subject.destroyed? }.from(false).to(true)
       end
     end
-    
+
     context 'with :PUT',
             if: described_class.private_method_defined?(:put) do
       let(:graph) { RDF::Graph.new }
@@ -304,7 +305,7 @@ shared_examples 'an RDFSource' do
 
       context 'when subject exists' do
         before { subject.create('', 'application/n-triples') }
-        
+
         it 'responds 200' do
           expect(subject.request(:PUT, 200, {'abc' => 'def'}, env))
             .to contain_exactly(200, a_hash_including('abc' => 'def'), subject)

@@ -8,15 +8,10 @@ task :benchmark do
   # RDF::Repository: 6s
   # RDF::Mongo::Repository: 18s
   # RDF::Mongo::Repository + Mongoid::Graph: 19s
-  # RDF::Mongo::GraphRepository: 24s
-  # RDF::Mongoid::Repository: 23s
 
   # clear repository
   REPOSITORY = Ladder::LDP.settings.repository
-
-  mongoid_opts = { clients: { default: { uri: REPOSITORY.uri } } }
-  ::Mongoid.load_configuration(mongoid_opts)
-  ::Mongo::Logger.level = Logger::FATAL
+  REPOSITORY.clear!
 
   TURTLE = File.open('etc/doap.ttl').read
 

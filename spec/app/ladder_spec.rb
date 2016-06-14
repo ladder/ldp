@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'rack/test'
+
 require 'ladder'
 
 describe 'ladder' do
@@ -209,6 +210,7 @@ describe 'ladder' do
           graph << RDF::Statement(RDF::Node.new,
                                   RDF::Vocab::DC.title,
                                   'moomin')
+          sleep 1 # FIXME: spec fails when #put is called too soon (why?)
           put '/moomin', graph.dump(:ttl), 'CONTENT_TYPE' => 'text/turtle'
           expect(last_response.header['Etag']).not_to eq etag
         end

@@ -21,10 +21,10 @@ shared_examples 'a Resource' do
     end
 
     context 'while existing' do
-      before { subject.create(StringIO.new(''), 'application/n-triples') }
+      before { repository.clear! ; subject.create(StringIO.new(''), 'application/n-triples') }
 
       subject          { described_class.new(uri, repository) }
-      let(:repository) { RDF::Repository.new }
+      let(:repository) { Ladder::LDP.settings.repository }
 
       it 'exists' do
         expect(subject).to exist

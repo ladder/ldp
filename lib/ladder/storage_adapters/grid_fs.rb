@@ -45,7 +45,10 @@ class GridFSAdapter
     raise ArgumentError, "non-parented URI: #{resource.subject_uri}" unless resource.subject_uri.has_parent?
     @filename = resource.subject_uri.path
 
-    repository = resource.instance_variable_get('@data')
+    # FIXME: should this go in (patched) NonRDFSource#initialize?
+    repository = Ladder::LDP.settings.repository
+    #repository = resource.instance_variable_get('@data')
+
     client = repository.instance_variable_get('@client')
     @bucket = client.database.fs
   end
@@ -75,10 +78,14 @@ class GridFSAdapter
     chunk_size = string.length
 
     # open an upload stream
-    @stream ||= @bucket.open_upload_stream(@filename, chunk_size: chunk_size)
+    @stream = @bucket.open_upload_stream(@filename, chunk_size: chunk_size)
     @stream.write(string)
 
     chunk_size
+  end
+
+  def file_exists?
+    @bucket.find(filename: @filename).count > 0
   end
 
   ##
@@ -86,9 +93,17 @@ class GridFSAdapter
   #
   # @param [Proc] a block which iterates over the returned chunks.
   def each(&block)
+    # write the file if it doesn't exist
+    return self.write block.call if 0 == @bucket.find(filename: @filename).count
+
     # open a download stream
     @stream ||= @bucket.open_download_stream_by_name(@filename)
-    @stream.each &block
+
+    block_given? ? @stream.each(&block) : @stream.to_a
+  end
+
+  def to_a
+    self.each
   end
 
   ##
@@ -97,7 +112,7 @@ class GridFSAdapter
   # @return [Boolean] whether anything was deleted
   def delete
     files = @bucket.find(filename: @filename)
-    return false if files.count == 0
+    return false if 0 == files.count
 
     # https://github.com/mongoid/mongoid/blob/master/lib/mongoid/extensions/hash.rb#L90-L92
     ids = files.map { |hash| hash["_id"] || hash["id"] || hash[:id] || hash[:_id] }
