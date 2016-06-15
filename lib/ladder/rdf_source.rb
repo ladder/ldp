@@ -1,4 +1,5 @@
 require 'mongoid'
+require 'ladder/searchable'
 
 module Ladder
   class Statement
@@ -17,6 +18,9 @@ module Ladder
 
   class Graph
     include Mongoid::Document
+    include Ladder::Searchable
+
+    index_for_search :as_jsonld
 
     field :c
     field :ct, default: :default
@@ -31,6 +35,12 @@ module Ladder
 
     def project_graph
       self.statements = Ladder::Statement.where({c: self.c, ct: self.ct}).map { |s| s.attributes }
+    end
+
+    def to_rdf
+      graph = RDF::Graph.new # name: self.c (if self.ct == :u)
+      statements.each { |s| graph << RDF::Statement.from_mongo(s)}
+      graph
     end
   end
 end
