@@ -18,6 +18,7 @@ module Ladder
 
   class Graph
     include Mongoid::Document
+    # TODO: don't index metagraphs
     include Ladder::Searchable
 
     index_for_search :as_jsonld
