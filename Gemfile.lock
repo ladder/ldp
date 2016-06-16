@@ -27,6 +27,8 @@ PATH
   remote: .
   specs:
     ladder-ldp (0.5.0)
+      activejob
+      elasticsearch-model
       mongoid
       rdf-ldp
       rdf-mongo
@@ -255,8 +257,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  activejob
-  elasticsearch-model
   ladder-ldp!
   pry
   rack-test

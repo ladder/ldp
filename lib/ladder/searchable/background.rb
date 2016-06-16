@@ -10,9 +10,12 @@ module Ladder
 
         GlobalID.app = 'Ladder'
 
-        after_create   { enqueue :index }
-        after_update   { enqueue :update }
-        before_destroy { enqueue :delete }
+        # Register callback hooks if we're using them
+        if ancestors.include? ActiveSupport::Callbacks
+          after_create   { enqueue :index  }
+          after_update   { enqueue :update }
+          before_destroy { enqueue :delete }
+        end
       end
 
       private
@@ -37,9 +40,9 @@ module Ladder
         # @return [void]
         def perform(operation, model)
           case operation
-          when 'index' then model.__elasticsearch__.index_document
-          when 'update' then model.__elasticsearch__.update_document
-          when 'delete' then model.__elasticsearch__.delete_document
+          when 'index'  then model.__elasticsearch__.index_document
+          when 'update' then model.__elasticsearch__.update_document ignore: 404
+          when 'delete' then model.__elasticsearch__.delete_document ignore: 404
           end
         end
       end

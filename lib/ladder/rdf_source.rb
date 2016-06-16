@@ -18,10 +18,9 @@ module Ladder
 
   class Graph
     include Mongoid::Document
-    # TODO: don't index metagraphs
-    include Ladder::Searchable
 
-    index_for_search :as_jsonld
+    include Ladder::Searchable  # TODO: don't index metagraphs?
+    index_for_search :as_jsonld # TODO: fix ES problems with #as_flattened_jsonld
 
     field :c
     field :ct, default: :default
@@ -97,7 +96,5 @@ module RDF::LDP
 
       self
     end
-
   end
-
 end
