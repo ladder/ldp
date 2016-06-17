@@ -1,27 +1,25 @@
+require 'mongoid'
+require 'ladder/searchable/file'
 require 'ladder/storage_adapters/grid_fs'
-require 'ladder/searchable'
 
 module Ladder
   class File
-    include ActiveModel::Model
-    attr_accessor :id, :resource
+    include Mongoid::Document
+    include Ladder::Searchable::File
 
-    define_model_callbacks :create, only: :after
-    define_model_callbacks :update, only: :after
-    define_model_callbacks :destroy, only: :before
+    store_in collection: -> { Ladder::LDP.settings.repository.client.database.fs.files_collection.name }
 
-    include Ladder::Searchable
+    field :length
+    field :chunkSize
+    field :uploadDate
+    field :md5
+    field :contentType
+    field :filename
 
-    def self.find(uri)
-binding.pry
-      resource = RDF::LDP::NonRDFSource.find(RDF::URI(uri), Ladder::LDP.settings.repository)
-      self.new(id: uri, resource: resource)
-    end
+    alias_method :content_type, :contentType
 
-    def as_indexed_json(*)
-      storage = GridFSAdapter.new(resource)
-binding.pry
-      { file: Base64.encode64(data) }
+    def data
+      collection.database.fs.open_download_stream_by_name(filename).read
     end
 
   end
@@ -38,8 +36,10 @@ module RDF::LDP
       super
       self.content_type = c_type
       RDFSource.new(description_uri, @data).create('', 'application/n-triples')
-#      binding.pry if storage.file_exists?
-#      Ladder::File.new(id: subject_uri).send(:enqueue, :index)
+
+      file = Ladder::File.where(filename: subject_uri.path).first
+      file.send(:enqueue, :index) if file
+
       self
     end
 
@@ -49,7 +49,10 @@ module RDF::LDP
       storage.io { |io| IO.copy_stream(input.binmode, io) }
       super
       self.content_type = c_type
-#
+
+      file = Ladder::File.where(filename: subject_uri.path).first
+      file.send(:enqueue, :update) if file
+
       self
     end
 
@@ -59,7 +62,9 @@ module RDF::LDP
     #
     # @see RDF::LDP::Resource#destroy
     def destroy
-#
+      file = Ladder::File.where(filename: subject_uri.path).first
+      file.send(:enqueue, :delete) if file
+
       storage.delete
       super
     end

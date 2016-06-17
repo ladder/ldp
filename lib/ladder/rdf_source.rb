@@ -1,5 +1,5 @@
 require 'mongoid'
-require 'ladder/searchable'
+require 'ladder/searchable/graph'
 
 module Ladder
   class Statement
@@ -19,8 +19,8 @@ module Ladder
   class Graph
     include Mongoid::Document
 
-    include Ladder::Searchable  # TODO: don't index metagraphs?
-    index_for_search :as_jsonld # TODO: fix ES problems with #as_flattened_jsonld
+    include Ladder::Searchable::Graph # TODO: don't index metagraphs?
+    index_for_search :as_jsonld       # TODO: fix ES problems with #as_flattened_jsonld
 
     field :c
     field :ct, default: :default
