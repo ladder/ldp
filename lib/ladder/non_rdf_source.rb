@@ -7,7 +7,7 @@ module Ladder
     include Mongoid::Document
     include Ladder::Searchable::File
 
-    store_in collection: -> { Ladder::LDP.settings.repository.client.database.fs.files_collection.name }
+#    store_in collection: -> { Ladder::LDP.settings.repository.client.database.fs.files_collection.name }
 
     field :length
     field :chunkSize
@@ -27,6 +27,16 @@ end
 
 module RDF::LDP
   class NonRDFSource
+    def initialize(subject_uri, data = RDF::Repository.new)
+      super
+
+      # Configuration settings for Mongoid
+      Mongoid.load_configuration({ clients: { default: { uri: Ladder::LDP.settings.uri } } }) unless Mongoid.configured?
+
+      data = Ladder::LDP.settings.repository
+      Ladder::File.store_in(collection: data.client.database.fs.files_collection.name)
+    end
+
     def storage
       @storage_adapter ||= GridFSAdapter.new(self)
     end
