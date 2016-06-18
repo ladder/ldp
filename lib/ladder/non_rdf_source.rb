@@ -7,8 +7,6 @@ module Ladder
     include Mongoid::Document
     include Ladder::Searchable::File
 
-#    store_in collection: -> { Ladder::LDP.settings.repository.client.database.fs.files_collection.name }
-
     field :length
     field :chunkSize
     field :uploadDate
@@ -31,10 +29,10 @@ module RDF::LDP
       super
 
       # Configuration settings for Mongoid
+      Mongo::Logger.level = Ladder::LDP.settings.log_level
       Mongoid.load_configuration({ clients: { default: { uri: Ladder::LDP.settings.uri } } }) unless Mongoid.configured?
 
-      data = Ladder::LDP.settings.repository
-      Ladder::File.store_in(collection: data.client.database.fs.files_collection.name)
+      Ladder::File.store_in(collection: Ladder::LDP.settings.repository.client.database.fs.files_collection.name)
     end
 
     def storage

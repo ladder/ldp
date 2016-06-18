@@ -19,11 +19,9 @@ module Ladder
 
     # Set defaults in case user has not configured values
     configure do
-      Mongo::Logger.level = Logger::DEBUG
-
-      # Use a class that implements the RDF::Repository interface
       set :uri, 'mongodb://localhost:27017/ladder'
       set :repository, RDF::Mongo::Repository.new(uri: uri)
+      set :log_level, Logger::DEBUG
     end
 
     get '/*' do

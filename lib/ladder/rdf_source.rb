@@ -51,6 +51,7 @@ module RDF::LDP
       super
 
       # Configuration settings for Mongoid
+      Mongo::Logger.level = Ladder::LDP.settings.log_level
       Mongoid.load_configuration({ clients: { default: { uri: Ladder::LDP.settings.uri } } }) unless Mongoid.configured?
 
       data = Ladder::LDP.settings.repository
