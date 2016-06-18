@@ -35,7 +35,7 @@ module Ladder
       #
       # @return [Hash] a serialized version of the file
       def as_indexed_json(*)
-        { file: Base64.encode64(data) }
+        { content: Base64.encode64(data) }
       end
     end
   end
