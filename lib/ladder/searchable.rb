@@ -1,8 +1,6 @@
 require 'elasticsearch/model'
 require 'ladder/searchable/background'
 
-require 'pry'
-
 module Ladder
   module Searchable
     extend ActiveSupport::Concern
