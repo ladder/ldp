@@ -58,6 +58,7 @@ GEM
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
     diff-lcs (1.2.5)
+    docile (1.1.5)
     ebnf (1.0.1)
       rdf (~> 2.0)
       sxp (~> 1.0)
@@ -224,6 +225,11 @@ GEM
       rspec-support (~> 3.4.0)
     rspec-support (3.4.1)
     safe_yaml (1.0.4)
+    simplecov (0.12.0)
+      docile (~> 1.1.0)
+      json (>= 1.8, < 3)
+      simplecov-html (~> 0.10.0)
+    simplecov-html (0.10.0)
     sinatra (1.4.7)
       rack (~> 1.5)
       rack-protection (~> 1.4)
@@ -264,6 +270,7 @@ DEPENDENCIES
   rdf-ldp!
   rdf-mongo!
   rspec
+  simplecov
   timecop
   yard
 

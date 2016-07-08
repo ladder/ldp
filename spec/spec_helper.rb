@@ -1,4 +1,8 @@
 require "bundler/setup"
+require 'simplecov'
+
+SimpleCov.start
+
 require 'rdf/isomorphic'
 require 'linkeddata'
 require 'rdf/ldp'
