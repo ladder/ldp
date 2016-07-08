@@ -16,6 +16,7 @@ module Ladder
     alias_method :content_type, :contentType
 
     def data
+      # FIXME: #read does multiple #find calls
       collection.database.fs.open_download_stream_by_name(filename).read
     end
   end

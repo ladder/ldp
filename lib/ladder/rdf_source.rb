@@ -5,7 +5,6 @@ module Ladder
   module RDFSource
     def initialize(*)
       Ladder::Statement.store_in(collection: Ladder::LDP.settings.repository.collection.name)
-
       super
     end
 
@@ -13,7 +12,7 @@ module Ladder
       super
 
       [self.graph, self.metagraph].each do |g|
-        Ladder::Graph.find_or_create_by(RDF::Mongo::Conversion.to_mongo(g.name, :graph_name)) unless g.empty?
+        Ladder::Graph.find_or_create_by(g_to_attr(g)) unless g.empty?
       end
 
       self
@@ -23,7 +22,8 @@ module Ladder
       super
 
       [self.graph, self.metagraph].each do |g|
-        Ladder::Graph.where(RDF::Mongo::Conversion.to_mongo(g.name, :graph_name)).first_or_initialize.save unless g.empty?
+        # TODO: if graph is empty, delete it?
+        Ladder::Graph.find_or_initialize_by(g_to_attr(g)).save unless g.empty?
       end
 
       self
@@ -33,10 +33,16 @@ module Ladder
       super
 
       [self.graph, self.metagraph].each do |g|
-        Ladder::Graph.where(RDF::Mongo::Conversion.to_mongo(g.name, :graph_name)).destroy
+        Ladder::Graph.destroy_all(g_to_attr(g))
       end
 
       self
+    end
+
+    private
+
+    def g_to_attr(g)
+      RDF::Mongo::Conversion.to_mongo(g.name, :graph_name)
     end
   end
 end

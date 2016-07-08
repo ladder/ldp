@@ -8,6 +8,8 @@ module Ladder
 
       included do
         include Ladder::Searchable
+
+        __elasticsearch__.create_index!
       end
 
       ##
@@ -17,7 +19,8 @@ module Ladder
       #
       # @return [Hash] a serialized version of the resource
       def as_indexed_json(*)
-        as_json(except: [:id, :_id])
+        # TODO: fix ES problems with #as_flattened_jsonld
+        as_jsonld
       end
 
       ##

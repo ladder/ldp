@@ -5,10 +5,11 @@ module Ladder
   module NonRDFSource
     def initialize(*)
       Ladder::File.store_in(collection: Ladder::LDP.settings.repository.client.database.fs.files_collection.name)
-
       super
     end
 
+    # TODO: decouple these from #enqueue in favour of triggering callbacks
+    # TODO: if file data is empty, how to handle?
     def file
       Ladder::File.where(filename: subject_uri.path).first
     end

@@ -12,10 +12,10 @@ module Ladder
         # https://github.com/elasticsearch/elasticsearch-mapper-attachments
         mapping _source: { enabled: false } do
           indexes :file, type: 'attachment', fields: {
-#            file: { store: true },
+            # NB: storing content makes source text accessible
             content: { store: true },
-            title: { store: true },
             date: { store: true },
+            title: { store: true },
             author: { store: true },
             keywords: { store: true },
             content_type: { store: true },
@@ -35,7 +35,7 @@ module Ladder
       #
       # @return [Hash] a serialized version of the file
       def as_indexed_json(*)
-        { content: Base64.encode64(data) }
+        { file: Base64.encode64(data) }
       end
     end
   end
