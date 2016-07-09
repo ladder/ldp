@@ -3,8 +3,12 @@ require 'sinatra/base'
 require 'rdf/mongo'
 
 require 'mongoid'
+require 'ladder/mongo_repository'
 require 'ladder/rdf_source'
 require 'ladder/non_rdf_source'
+
+# patch RDF::Mongo::Repository
+RDF::Mongo::Repository.include Ladder::MongoRepository
 
 # patch RDF::LDP classes
 RDF::LDP::RDFSource.include    Ladder::RDFSource
