@@ -5,13 +5,9 @@ shared_examples 'a Searchable RDFSource' do
   let(:repo) { Ladder::LDP.settings.repository }
   let(:index) { Elasticsearch::Model.client.indices }
 
-  before do
-    # TODO: clean this up
-    repo.clear!
-    index.delete index: '_all'
-    Ladder::Graph.__elasticsearch__.create_index!
-    Ladder::Metagraph.__elasticsearch__.create_index!
-  end
+  before { repo.clear! }
+
+  after { subject.destroy }
 
   describe '#create' do
     let(:graph) { RDF::Graph.new }
@@ -99,7 +95,7 @@ shared_examples 'a Searchable RDFSource' do
 
     context 'when it exists' do
       before do
-        # TODO: clean this up
+        # FIXME: clean this up
         repo.clear!
         index.delete index: '_all'
         Ladder::Graph.__elasticsearch__.create_index!

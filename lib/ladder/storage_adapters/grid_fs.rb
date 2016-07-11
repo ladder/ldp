@@ -110,8 +110,7 @@ class GridFSAdapter
     files = @bucket.find(filename: @filename)
     return false if 0 == files.count
 
-    # https://github.com/mongoid/mongoid/blob/master/lib/mongoid/extensions/hash.rb#L90-L92
-    ids = files.map { |hash| hash["_id"] || hash["id"] || hash[:id] || hash[:_id] }
+    ids = files.map(&:extract_id) # NB: requires Mongoid
 
     @bucket.files_collection.delete_many(_id: {'$in' => ids})
     @bucket.chunks_collection.delete_many(files_id: {'$in' => ids})

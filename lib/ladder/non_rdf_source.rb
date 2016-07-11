@@ -27,8 +27,8 @@ module Ladder
     end
 
     def destroy
-      super
       file.send(:enqueue, :delete) if file
+      super
       self
     end
   end
