@@ -11,8 +11,10 @@ module Ladder
     def create(input, content_type, &block)
       super
 
-      Ladder::Graph.find_or_create_by(g_to_attr(graph)) unless graph.empty?
-      Ladder::Metagraph.find_or_create_by(g_to_attr(metagraph)) unless metagraph.empty?
+      unless graph.empty?
+        Ladder::Graph.find_or_create_by(g_to_attr(graph))
+        Ladder::Metagraph.find_or_create_by(g_to_attr(metagraph))
+      end
 
       self
     end
@@ -20,8 +22,12 @@ module Ladder
     def update(input, content_type, &block)
       super
 
-      # TODO: if graph is empty, delete it?
-      Ladder::Graph.find_or_initialize_by(g_to_attr(graph)).save unless graph.empty?
+      if graph.empty?
+        Ladder::Graph.destroy_all(g_to_attr(graph))
+      else
+        Ladder::Graph.find_or_initialize_by(g_to_attr(graph)).save
+      end
+
       Ladder::Metagraph.find_or_initialize_by(g_to_attr(metagraph)).save unless metagraph.empty?
 
       self
@@ -31,6 +37,8 @@ module Ladder
       super
 
       Ladder::Graph.destroy_all(g_to_attr(graph))
+
+      # NB: we destroy metagraphs to trigger appropriate callbacks
       Ladder::Metagraph.destroy_all(g_to_attr(metagraph))
 
       self
