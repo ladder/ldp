@@ -1,9 +1,9 @@
 GIT
-  remote: https://github.com/ruby-rdf/rdf-ldp.git
-  revision: f84eaf49277cd4d32b1296a3294bee1c3fe8b606
+  remote: https://github.com/ladder/rdf-ldp.git
+  revision: 26ad1f302a3e673442c7a6a13a1847e846692447
   branch: develop
   specs:
-    rdf-ldp (0.6.0)
+    rdf-ldp (0.7.0)
       json-ld (~> 2.0)
       ld-patch (~> 0.3)
       link_header (~> 0.0, >= 0.0.8)
@@ -15,8 +15,8 @@ GIT
       sinatra (~> 1.4)
 
 GIT
-  remote: https://github.com/ruby-rdf/rdf-mongo.git
-  revision: 4ad99a89bfaed07ff03e4f5da89bfb279c27b9e6
+  remote: https://github.com/ladder/rdf-mongo.git
+  revision: 73e2e6d168f42a61c4055c2b6a3fb2c4920defe4
   branch: develop
   specs:
     rdf-mongo (2.0.0)
@@ -29,7 +29,7 @@ PATH
     ladder-ldp (0.5.0)
       activejob
       elasticsearch-model
-      mongoid
+      mongoid (~> 5.1)
       rdf-ldp
       rdf-mongo
 
@@ -62,16 +62,16 @@ GEM
     ebnf (1.0.1)
       rdf (~> 2.0)
       sxp (~> 1.0)
-    elasticsearch (1.0.17)
-      elasticsearch-api (= 1.0.17)
-      elasticsearch-transport (= 1.0.17)
-    elasticsearch-api (1.0.17)
+    elasticsearch (1.0.18)
+      elasticsearch-api (= 1.0.18)
+      elasticsearch-transport (= 1.0.18)
+    elasticsearch-api (1.0.18)
       multi_json
     elasticsearch-model (0.1.9)
       activesupport (> 3)
       elasticsearch (> 0.4)
       hashie
-    elasticsearch-transport (1.0.17)
+    elasticsearch-transport (1.0.18)
       faraday
       multi_json
     equivalent-xml (0.6.0)
@@ -122,7 +122,7 @@ GEM
       sparql (~> 2.0)
       sparql-client (~> 2.0)
     method_source (0.8.2)
-    mini_portile2 (2.0.0)
+    mini_portile2 (2.1.0)
     minitest (5.9.0)
     mongo (2.2.5)
       bson (~> 4.0)
@@ -134,9 +134,11 @@ GEM
     multi_json (1.12.1)
     multipart-post (2.0.0)
     net-http-persistent (2.9.4)
-    nokogiri (1.6.7.2)
-      mini_portile2 (~> 2.0.0.rc2)
+    nokogiri (1.6.8)
+      mini_portile2 (~> 2.1.0)
+      pkg-config (~> 1.1.7)
     origin (2.2.0)
+    pkg-config (1.1.7)
     pry (0.10.3)
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
@@ -150,7 +152,7 @@ GEM
     rack-test (0.6.3)
       rack (>= 1.0)
     rake (11.1.2)
-    rdf (2.0.1)
+    rdf (2.0.2)
       hamster (~> 3.0)
       link_header (~> 0.0, >= 0.0.8)
     rdf-aggregate-repo (2.0.0)
@@ -166,7 +168,7 @@ GEM
       rdf-xsd (~> 2.0)
     rdf-n3 (2.0.0)
       rdf (~> 2.0)
-    rdf-rdfa (2.0.0)
+    rdf-rdfa (2.0.1)
       haml (~> 4.0)
       htmlentities (~> 4.3)
       rdf (~> 2.0)
@@ -204,7 +206,7 @@ GEM
     rdf-turtle (2.0.0)
       ebnf (~> 1.0, >= 1.0.1)
       rdf (~> 2.0)
-    rdf-vocab (2.0.1)
+    rdf-vocab (2.0.2)
       rdf (~> 2.0)
     rdf-xsd (2.0.0)
       rdf (~> 2.0)
@@ -243,13 +245,13 @@ GEM
       rdf-xsd (~> 2.0)
       sparql-client (~> 2.0)
       sxp (~> 1.0)
-    sparql-client (2.0.0)
+    sparql-client (2.0.1)
       net-http-persistent (~> 2.9)
       rdf (~> 2.0)
     sxp (1.0.0)
       rdf (~> 2.0)
     thread_safe (0.3.5)
-    tilt (2.0.4)
+    tilt (2.0.5)
     timecop (0.8.1)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
