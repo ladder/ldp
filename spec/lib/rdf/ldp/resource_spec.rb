@@ -1,25 +1,22 @@
 require 'spec_helper'
 
 describe RDF::LDP::Resource do
-  it_behaves_like 'a Resource'
+  it_behaves_like 'a Resource' 
 
   subject { described_class.new(uri) }
   let(:uri) { RDF::URI 'http://example.org/moomin' }
 
   describe '.find' do
-    let(:repository) { Ladder::LDP.settings.repository }
-    before { repository.clear! }
-
     it 'raises NotFound when the resource does not exist' do
-      expect { described_class.find(uri, repository) }
+      expect { described_class.find(uri, RDF::Repository.new) }
         .to raise_error RDF::LDP::NotFound
     end
-
     context 'when the resource exists' do
       before do
         graph << RDF::Statement(uri, RDF::Vocab::DC.title, 'snorkmaiden')
       end
 
+      let(:repository) { RDF::Repository.new }
       let(:graph) do
         RDF::Graph.new(graph_name: uri / '#meta', data: repository)
       end
@@ -29,7 +26,7 @@ describe RDF::LDP::Resource do
           .to be_a RDF::LDP::RDFSource
         expect(described_class.find(uri, repository).subject_uri).to eq uri
       end
-
+      
       it 'finds the resource with container interaction model' do
         graph << RDF::Statement(uri, RDF.type, RDF::LDP::Container.to_uri)
 

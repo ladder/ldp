@@ -5,7 +5,13 @@ shared_examples 'a Searchable RDFSource' do
   let(:repo) { Ladder::LDP.settings.repository }
   let(:index) { Elasticsearch::Model.client.indices }
 
-  before { repo.clear! }
+  before do
+    # FIXME: clean this up
+    repo.clear!
+    index.delete index: '_all'
+    Ladder::Graph.__elasticsearch__.create_index!
+    Ladder::Metagraph.__elasticsearch__.create_index!
+  end
 
   after { subject.destroy }
 
@@ -15,7 +21,7 @@ shared_examples 'a Searchable RDFSource' do
 
     context 'with an empty graph' do
       before do
-        begin; subject.create(graph.dump(:ttl), content_type); rescue; end
+        begin; subject.create(StringIO.new(graph.dump(:ttl)), content_type); rescue; end
         index.flush
       end
 
@@ -33,7 +39,7 @@ shared_examples 'a Searchable RDFSource' do
     context 'with data in graph' do
       before do
         graph << RDF::Statement(subject.subject_uri, RDF::Vocab::DC.isPartOf, RDF::URI('#moomintroll'))
-        begin; subject.create(graph.dump(:ttl), content_type); rescue; end
+        begin; subject.create(StringIO.new(graph.dump(:ttl)), content_type); rescue; end
         index.flush
       end
 
@@ -64,7 +70,7 @@ shared_examples 'a Searchable RDFSource' do
 
     shared_examples 'updating rdf_sources' do
       before do
-        subject.update(graph.dump(:ttl), content_type)
+        subject.update(StringIO.new(graph.dump(:ttl)), content_type)
         index.flush
       end
 
@@ -83,7 +89,7 @@ shared_examples 'a Searchable RDFSource' do
 
     context 'when graph is empty' do
       before do
-        subject.update('', content_type)
+        subject.update(StringIO.new(''), content_type)
         index.flush
       end
 
@@ -102,7 +108,7 @@ shared_examples 'a Searchable RDFSource' do
         Ladder::Metagraph.__elasticsearch__.create_index!
 
         graph << RDF::Statement(subject.subject_uri, RDF::Vocab::DC.isPartOf, RDF::URI('#moomintroll'))
-        begin; subject.create(graph.dump(:ttl), content_type); rescue; end
+        begin; subject.create(StringIO.new(graph.dump(:ttl)), content_type); rescue; end
       end
 
       include_examples 'updating rdf_sources'
@@ -123,7 +129,7 @@ shared_examples 'a Searchable RDFSource' do
     let(:content_type) { 'text/turtle' }
 
     before do
-      begin; subject.create(graph.dump(:ttl), content_type); rescue; end
+      begin; subject.create(StringIO.new(graph.dump(:ttl)), content_type); rescue; end
       subject.destroy
       index.flush
     end
