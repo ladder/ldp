@@ -19,8 +19,8 @@ shared_examples 'a Searchable RDFSource' do
       begin; subject.create(graph.dump(:ttl), content_type); rescue; end
 
       index.flush
-      results = Ladder::Graph.search('*') # FIXME: will find metagraph
-      expect(results.count).to eq 0
+      results = Ladder::Graph.search('*')
+      expect(results).to be_empty
     end
 
     it 'exists in the index' do

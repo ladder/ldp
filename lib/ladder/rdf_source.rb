@@ -12,7 +12,7 @@ module Ladder
       super
 
       Ladder::Graph.find_or_create_by(g_to_attr(graph)) unless graph.empty?
-      Ladder::MetaGraph.find_or_create_by(g_to_attr(metagraph)) unless metagraph.empty?
+      Ladder::Metagraph.find_or_create_by(g_to_attr(metagraph)) unless metagraph.empty?
 
       self
     end
@@ -22,7 +22,7 @@ module Ladder
 
       # TODO: if graph is empty, delete it?
       Ladder::Graph.find_or_initialize_by(g_to_attr(graph)).save unless graph.empty?
-      Ladder::MetaGraph.find_or_initialize_by(g_to_attr(metagraph)).save unless metagraph.empty?
+      Ladder::Metagraph.find_or_initialize_by(g_to_attr(metagraph)).save unless metagraph.empty?
 
       self
     end
@@ -31,7 +31,7 @@ module Ladder
       super
 
       Ladder::Graph.destroy_all(g_to_attr(graph))
-      Ladder::MetaGraph.destroy_all(g_to_attr(metagraph))
+      Ladder::Metagraph.destroy_all(g_to_attr(metagraph))
 
       self
     end
