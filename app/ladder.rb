@@ -1,8 +1,9 @@
 require 'rack/ldp'
 require 'sinatra/base'
-require 'rdf/mongo'
 
+require 'rdf/mongo'
 require 'mongoid'
+
 require 'ladder/mongo_repository'
 require 'ladder/rdf_source'
 require 'ladder/non_rdf_source'
@@ -39,7 +40,7 @@ module Ladder
 
     get '/*' do
       RDF::LDP::Container.new(RDF::URI(request.url), settings.repository)
-        .create('', 'text/turtle') if settings.repository.empty?
+        .create(StringIO.new, 'text/turtle') if settings.repository.empty?
       RDF::LDP::Resource.find(RDF::URI(request.url), settings.repository)
     end
 
