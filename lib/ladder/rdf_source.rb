@@ -1,5 +1,6 @@
 require 'ladder/model/statement'
 require 'ladder/model/graph'
+require 'ladder/model/metagraph'
 
 module Ladder
   module RDFSource
