@@ -1,4 +1,3 @@
-require 'ladder/model/statement'
 require 'ladder/model/graph'
 
 module Ladder

@@ -17,7 +17,6 @@ task :benchmark do
   # RDF::Mongo::Repository + Elasticseach Sync:
   # rake benchmark  22.41s user 1.24s system 74% cpu 31.596 total
 
-
   # clear repository
   REPOSITORY = Ladder::LDP.settings.repository
   REPOSITORY.clear!

@@ -8,26 +8,24 @@ module Ladder
       super
     end
 
-    # TODO: decouple these from #enqueue in favour of triggering callbacks
-    # TODO: if file data is empty, how to handle?
     def file
       Ladder::File.where(filename: subject_uri.path).first
     end
 
     def create(input, c_type)
       super
-      file.send(:enqueue, :index) if file
+      file.run_callbacks(:create) if file
       self
     end
 
     def update(input, c_type)
       super
-      file.send(:enqueue, :update) if file
+      file.run_callbacks(:update) if file
       self
     end
 
     def destroy
-      file.send(:enqueue, :delete) if file
+      file.run_callbacks(:destroy) if file
       super
       self
     end

@@ -1,12 +1,18 @@
+# LDP
 require 'rack/ldp'
 require 'sinatra/base'
 
+# Persistence
 require 'rdf/mongo'
 require 'mongoid'
+require 'active_job'
 
 require 'ladder/mongo_repository'
 require 'ladder/rdf_source'
 require 'ladder/non_rdf_source'
+
+# for debugging
+require 'pry'
 
 # patch RDF::Mongo::Repository
 RDF::Mongo::Repository.include Ladder::MongoRepository
@@ -14,9 +20,6 @@ RDF::Mongo::Repository.include Ladder::MongoRepository
 # patch RDF::LDP classes
 RDF::LDP::RDFSource.include    Ladder::RDFSource
 RDF::LDP::NonRDFSource.include Ladder::NonRDFSource
-
-# for debugging
-require 'pry'
 
 module Ladder
   class LDP < Sinatra::Base
@@ -29,10 +32,16 @@ module Ladder
 
     # Set defaults in case user has not configured values
     configure do
+      set :log_level, :fatal
+      set :queue_adapter, :inline # ActiveJob
+
+      # Mongoid
       set :uri, 'mongodb://localhost:27017/ladder'
       set :repository, RDF::Mongo::Repository.new(uri: uri)
-      set :log_level, :fatal
     end
+
+    # Configuration settings for ActiveJob
+    ActiveJob::Base.queue_adapter = Ladder::LDP.settings.queue_adapter
 
     # Configuration settings for Mongoid
     Mongoid.load_configuration({ clients: { default: { uri: Ladder::LDP.settings.uri  } },
