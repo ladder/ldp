@@ -1,9 +1,19 @@
 require 'rack/ldp'
 require 'sinatra/base'
-require 'rdf/mongo'
 
+require 'rdf/mongo'
+require 'mongoid'
+
+require 'ladder/mongo_repository'
 require 'ladder/rdf_source'
 require 'ladder/non_rdf_source'
+
+# patch RDF::Mongo::Repository
+RDF::Mongo::Repository.include Ladder::MongoRepository
+
+# patch RDF::LDP classes
+RDF::LDP::RDFSource.include    Ladder::RDFSource
+RDF::LDP::NonRDFSource.include Ladder::NonRDFSource
 
 # for debugging
 require 'pry'
@@ -19,16 +29,18 @@ module Ladder
 
     # Set defaults in case user has not configured values
     configure do
-      Mongo::Logger.level = Logger::DEBUG
-
-      # Use a class that implements the RDF::Repository interface
       set :uri, 'mongodb://localhost:27017/ladder'
       set :repository, RDF::Mongo::Repository.new(uri: uri)
+      set :log_level, :fatal
     end
+
+    # Configuration settings for Mongoid
+    Mongoid.load_configuration({ clients: { default: { uri: Ladder::LDP.settings.uri  } },
+                                 options: { log_level: Ladder::LDP.settings.log_level } }) unless Mongoid.configured?
 
     get '/*' do
       RDF::LDP::Container.new(RDF::URI(request.url), settings.repository)
-        .create('', 'text/turtle') if settings.repository.empty?
+        .create(StringIO.new, 'text/turtle') if settings.repository.empty?
       RDF::LDP::Resource.find(RDF::URI(request.url), settings.repository)
     end
 

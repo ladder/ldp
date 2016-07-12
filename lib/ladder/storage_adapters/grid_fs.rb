@@ -46,11 +46,7 @@ class GridFSAdapter
     @filename = resource.subject_uri.path
 
     # FIXME: should this go in (patched) NonRDFSource#initialize?
-    repository = Ladder::LDP.settings.repository
-    #repository = resource.instance_variable_get('@data')
-
-    client = repository.instance_variable_get('@client')
-    @bucket = client.database.fs
+    @bucket = Ladder::LDP.settings.repository.client.database.fs
   end
 
   ##
@@ -114,8 +110,7 @@ class GridFSAdapter
     files = @bucket.find(filename: @filename)
     return false if 0 == files.count
 
-    # https://github.com/mongoid/mongoid/blob/master/lib/mongoid/extensions/hash.rb#L90-L92
-    ids = files.map { |hash| hash["_id"] || hash["id"] || hash[:id] || hash[:_id] }
+    ids = files.map(&:extract_id) # NB: requires Mongoid
 
     @bucket.files_collection.delete_many(_id: {'$in' => ids})
     @bucket.chunks_collection.delete_many(files_id: {'$in' => ids})

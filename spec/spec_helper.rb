@@ -1,4 +1,8 @@
 require "bundler/setup"
+require 'simplecov'
+
+SimpleCov.start
+
 require 'rdf/isomorphic'
 require 'linkeddata'
 require 'rdf/ldp'
@@ -7,8 +11,7 @@ require 'rdf/spec/matchers'
 require 'ladder'
 
 # clear repository
-REPOSITORY = Ladder::LDP.settings.repository
-REPOSITORY.clear!
+Ladder::LDP.settings.repository.clear!
 
 Dir['./spec/support/**/*.rb'].each { |f| require f }
 

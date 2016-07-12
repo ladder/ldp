@@ -118,13 +118,25 @@ describe 'ladder' do
         expect(last_response.status).to eq 415
       end
 
-      it 'returns 400 on improper document' do
+      it 'returns 400 on improper LDPatch document' do
         patch '/', '---blah---', 'CONTENT_TYPE' => 'text/ldpatch'
+        expect(last_response.status).to eq 400
+      end
+
+      it 'returns 400 on improper SPARQL Update document' do
+        patch '/', '---blah---', 'CONTENT_TYPE' => 'application/sparql-update'
         expect(last_response.status).to eq 400
       end
 
       it 'returns 200 on valid LDPatch' do
         patch '/', '', 'CONTENT_TYPE' => 'text/ldpatch'
+        expect(last_response.status).to eq 200
+      end
+
+      it 'returns 200 on valid SPARQL Update' do
+        update = "INSERT DATA { _:blah #{RDF::Vocab::DC.title.to_base} " \
+                 "'moomin' . }"
+        patch '/', update, 'CONTENT_TYPE' => 'application/sparql-update'
         expect(last_response.status).to eq 200
       end
     end
@@ -210,7 +222,6 @@ describe 'ladder' do
           graph << RDF::Statement(RDF::Node.new,
                                   RDF::Vocab::DC.title,
                                   'moomin')
-          sleep 1 # FIXME: spec fails when #put is called too soon (why?)
           put '/moomin', graph.dump(:ttl), 'CONTENT_TYPE' => 'text/turtle'
           expect(last_response.header['Etag']).not_to eq etag
         end

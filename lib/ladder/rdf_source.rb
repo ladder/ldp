@@ -1,92 +1,53 @@
-require 'mongoid'
+require 'ladder/model/statement'
+require 'ladder/model/graph'
 
 module Ladder
-  class Statement
-    include Mongoid::Document
-
-    # Use the same field names as RDF::Mongo::Conversion
-    %i(s st p pt o ot ol c ct).each { |key| field key }
-
-    index({s: 1})
-    index({p: 1})
-    index({o: 'hashed'})
-    index({c: 1})
-    index({s: 1, p: 1})
-    index({s: 1, p: 1, o: 1})
-  end
-
-  class Graph
-    include Mongoid::Document
-
-    field :c
-    field :ct, default: :default
-    field :statements, type: Array
-
-    index({c: 1})
-    index({ct: 1})
-
-    store_in collection: 'graphs'
-
-    before_save { project_graph if changed? }
-
-    def project_graph
-      self.statements = Ladder::Statement.where({c: self.c, ct: self.ct}).map { |s| s.attributes }
-    end
-  end
-end
-
-module RDF::LDP
-  class RDFSource
-    def initialize(subject_uri, data = RDF::Repository.new)
+  module RDFSource
+    def initialize(*)
+      Ladder::Statement.store_in(collection: Ladder::LDP.settings.repository.collection.name)
       super
-
-      # Configuration settings for Mongoid
-      Mongoid.load_configuration({ clients: { default: { uri: Ladder::LDP.settings.uri } } }) unless Mongoid.configured?
-
-      data = Ladder::LDP.settings.repository
-      Ladder::Statement.store_in(database: data.collection.database.name, collection: data.collection.name)
     end
 
     def create(input, content_type, &block)
-      super do |transaction|
-        statements = parse_graph(input, content_type)
-        transaction.insert(statements)
-        yield transaction if block_given?
-      end
+      super
 
-      [self.graph, self.metagraph].each do |g|
-        Ladder::Graph.find_or_create_by(RDF::Mongo::Conversion.to_mongo(g.name, :graph_name)) unless g.empty?
+      unless graph.empty?
+        Ladder::Graph.find_or_create_by(g_to_attr(graph))
+        Ladder::Metagraph.find_or_create_by(g_to_attr(metagraph))
       end
 
       self
     end
 
     def update(input, content_type, &block)
-      super do |transaction|
-        transaction.delete(RDF::Statement(nil, nil, nil, graph_name: subject_uri))
-        transaction.insert parse_graph(input, content_type)
-        yield transaction if block_given?
+      super
+
+      if graph.empty?
+        Ladder::Graph.destroy_all(g_to_attr(graph))
+      else
+        Ladder::Graph.find_or_initialize_by(g_to_attr(graph)).save
       end
 
-      [self.graph, self.metagraph].each do |g|
-        Ladder::Graph.where(RDF::Mongo::Conversion.to_mongo(g.name, :graph_name)).first_or_initialize.save unless g.empty?
-      end
+      Ladder::Metagraph.find_or_initialize_by(g_to_attr(metagraph)).save unless metagraph.empty?
 
       self
     end
 
     def destroy(&block)
-      super do |tx|
-        tx.delete(RDF::Statement(nil, nil, nil, graph_name: subject_uri))
-      end
+      super
 
-      [self.graph, self.metagraph].each do |g|
-        Ladder::Graph.where(RDF::Mongo::Conversion.to_mongo(g.name, :graph_name)).destroy
-      end
+      Ladder::Graph.destroy_all(g_to_attr(graph))
+
+      # NB: we destroy metagraphs to trigger appropriate callbacks
+      Ladder::Metagraph.destroy_all(g_to_attr(metagraph))
 
       self
     end
 
-  end
+    private
 
+    def g_to_attr(g)
+      RDF::Mongo::Conversion.to_mongo(g.name, :graph_name)
+    end
+  end
 end
