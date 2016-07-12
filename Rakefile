@@ -13,7 +13,7 @@ task :benchmark do
   REPOSITORY = Ladder::LDP.settings.repository
   REPOSITORY.clear!
 
-  TURTLE = File.open('etc/doap.ttl').read
+  TURTLE = File.open('etc/doap.ttl')
 
   SETS = 5
   REPS = 5
@@ -28,7 +28,7 @@ task :benchmark do
       SETS.times do |i|
         bm.report('LDP-RS POST:') do
           container = container_class.new(RDF::URI("http://example.org/#{container_class}/rs/#{i}"), REPOSITORY)
-          container.request(:put, 200, {}, {'CONTENT_TYPE' => 'application/n-triples', 'rack.input' => ''})
+          container.request(:put, 200, {}, {'CONTENT_TYPE' => 'application/n-triples', 'rack.input' => StringIO.new})
 
           REPS.times do
             container.request(:post, 200, {}, {'CONTENT_TYPE' => 'text/turtle', 'rack.input' => TURTLE})
@@ -69,7 +69,7 @@ task :benchmark do
           container = container_class.new(RDF::URI("http://example.org/#{container_class}/rs/#{i}"), REPOSITORY)
 
           container.graph.objects.each do |rs_uri|
-            RDF::LDP::RDFSource.new(rs_uri, REPOSITORY).request(:put, 200, {}, {'CONTENT_TYPE' => 'text/turtle', 'rack.input' => ''})
+            RDF::LDP::RDFSource.new(rs_uri, REPOSITORY).request(:put, 200, {}, {'CONTENT_TYPE' => 'text/turtle', 'rack.input' => StringIO.new})
           end
         end
       end
@@ -79,7 +79,7 @@ task :benchmark do
       SETS.times do |i|
         bm.report('LDP-NR:') do
           container = container_class.new(RDF::URI("http://example.org/#{container_class}/nr/#{i}"), REPOSITORY)
-          container.request(:put, 200, {}, {'CONTENT_TYPE' => 'application/n-triples', 'rack.input' => ''})
+          container.request(:put, 200, {}, {'CONTENT_TYPE' => 'application/n-triples', 'rack.input' => StringIO.new})
 
           REPS.times do
             container.request(:post, 200, {}, {'HTTP_LINK' => '<http://www.w3.org/ns/ldp#NonRDFSource>;rel=type', 'CONTENT_TYPE' => 'image/tiff', 'rack.input' => StringIO.new('testing')})
