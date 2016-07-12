@@ -5,11 +5,14 @@ require 'sinatra/base'
 # Persistence
 require 'rdf/mongo'
 require 'mongoid'
-require 'active_job'
 
 require 'ladder/mongo_repository'
 require 'ladder/rdf_source'
 require 'ladder/non_rdf_source'
+
+# Async
+require 'sidekiq'
+require 'ladder/searchable'
 
 # for debugging
 require 'pry'
@@ -33,7 +36,7 @@ module Ladder
     # Set defaults in case user has not configured values
     configure do
       set :log_level, :fatal
-      set :queue_adapter, :inline # ActiveJob
+      set :queue_adapter, :sidekiq # ActiveJob
 
       # Mongoid
       set :uri, 'mongodb://localhost:27017/ladder'
@@ -46,6 +49,15 @@ module Ladder
     # Configuration settings for Mongoid
     Mongoid.load_configuration({ clients: { default: { uri: Ladder::LDP.settings.uri  } },
                                  options: { log_level: Ladder::LDP.settings.log_level } }) unless Mongoid.configured?
+
+    # Configuration settings for Sidekiq
+    Sidekiq.configure_client do |config|
+      config.redis = { db: 1 }
+    end
+
+    Sidekiq.configure_server do |config|
+      config.redis = { db: 1 }
+    end
 
     get '/*' do
       RDF::LDP::Container.new(RDF::URI(request.url), settings.repository)

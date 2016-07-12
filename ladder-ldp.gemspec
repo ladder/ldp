@@ -31,6 +31,7 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency 'mongoid', '~> 5.1'
   gem.add_runtime_dependency 'activejob'
   gem.add_runtime_dependency 'elasticsearch-model'
+  gem.add_runtime_dependency 'sidekiq'
 
   gem.add_development_dependency 'pry'
   gem.add_development_dependency 'rspec'
