@@ -9,16 +9,16 @@ task :benchmark do
   # rake benchmark  5.12s user 0.25s system 98% cpu 5.454 total
 
   # RDF::Mongo::Repository:
-  # rake benchmark  11.88s user 1.00s system 73% cpu 17.441 total
+  # rake benchmark  11.88s user 1.00s system 73% cpu 17.441 total (+320%)
 
   # RDF::Mongo::Repository + Graphable:
-  # rake benchmark  12.89s user 1.04s system 74% cpu 18.679 total
-
-  # RDF::Mongo::Repository + Elasticseach Sync:
-  # rake benchmark  22.41s user 1.24s system 74% cpu 31.596 total
+  # rake benchmark  12.89s user 1.04s system 74% cpu 18.679 total (+7%)
 
   # RDF::Mongo::Repository + Elasticseach Sidekiq:
-  # rake benchmark  12.81s user 1.17s system 75% cpu 18.549 total
+  # rake benchmark  14.74s user 1.31s system 73% cpu 21.964 total (+18%; +26% vs. RDF::Mongo)
+
+  # RDF::Mongo::Repository + Elasticseach Sync:
+  # rake benchmark  22.41s user 1.24s system 74% cpu 31.596 total (+44%)
 
   # clear repository
   REPOSITORY = Ladder::LDP.settings.repository
