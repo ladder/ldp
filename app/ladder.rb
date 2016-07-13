@@ -51,12 +51,8 @@ module Ladder
                                  options: { log_level: Ladder::LDP.settings.log_level } }) unless Mongoid.configured?
 
     # Configuration settings for Sidekiq
-    Sidekiq.configure_client do |config|
-      config.redis = { db: 1 }
-    end
-
     Sidekiq.configure_server do |config|
-      config.redis = { db: 1 }
+      config.options[:queues] = ['elasticsearch']
     end
 
     get '/*' do

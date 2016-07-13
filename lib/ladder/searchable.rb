@@ -27,7 +27,7 @@ module Ladder
     # @param [Symbol] operation the kind of operation to perform: index, delete, update
     # @return [void]
     def enqueue(operation)
-      Indexer.set(queue: self.class.name.underscore.pluralize).perform_later(operation.to_s, self)
+      Indexer.perform_later(operation.to_s, self)
     end
 
     class Indexer < ActiveJob::Base
