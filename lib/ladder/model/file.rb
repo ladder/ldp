@@ -15,6 +15,8 @@ module Ladder
 
     alias_method :content_type, :contentType
 
+    store_in collection: ->{ Ladder::LDP.settings.repository.client.database.fs.files_collection.name }
+
     def data
       # FIXME: #read does multiple #find calls
       collection.database.fs.open_download_stream_by_name(filename).read

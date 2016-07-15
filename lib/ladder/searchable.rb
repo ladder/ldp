@@ -19,8 +19,6 @@ module Ladder
       end
     end
 
-    private
-
     ##
     # Queue an index operation for asynchronous execution
     #

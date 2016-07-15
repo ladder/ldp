@@ -3,11 +3,6 @@ require 'ladder/storage_adapters/grid_fs'
 
 module Ladder
   module NonRDFSource
-    def initialize(*)
-      Ladder::File.store_in(collection: Ladder::LDP.settings.repository.client.database.fs.files_collection.name)
-      super
-    end
-
     def file
       Ladder::File.where(filename: subject_uri.path).first
     end

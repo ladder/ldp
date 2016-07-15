@@ -46,6 +46,7 @@ class GridFSAdapter
     @filename = resource.subject_uri.path
 
     # FIXME: should this go in (patched) NonRDFSource#initialize?
+    # alternately, maybe a class variable? (since it shouldn't change after class load time)
     @bucket = Ladder::LDP.settings.repository.client.database.fs
   end
 
