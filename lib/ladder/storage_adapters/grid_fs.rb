@@ -1,3 +1,5 @@
+require 'rdf/mongo'
+
 ##
 # StorageAdapters bundle the logic for mapping a `NonRDFSource` to a
 # specific IO stream. Implementations must conform to a minimal interface:
