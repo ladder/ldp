@@ -42,11 +42,15 @@ class GridFSAdapter
   #
   # @param [NonRDFSource] resource
   def initialize(resource)
+    @resource = resource
+
     raise ArgumentError, "non-parented URI: #{resource.subject_uri}" unless resource.subject_uri.has_parent?
     @filename = resource.subject_uri.path
 
-    # FIXME: should this go in (patched) NonRDFSource#initialize?
-    @bucket = Ladder::LDP.settings.repository.client.database.fs
+    repo = resource.instance_variable_get(:@data)
+    raise TypeError, "expected #{resource.subject_uri} to be an instance of RDF::Mongo::Repository" unless repo.is_a? RDF::Mongo::Repository
+
+    @bucket = repo.client.database.fs
   end
 
   ##
@@ -74,14 +78,18 @@ class GridFSAdapter
     chunk_size = string.length
 
     # open an upload stream
-    @stream = @bucket.open_upload_stream(@filename, chunk_size: chunk_size)
+    @stream = @bucket.open_upload_stream(@filename, chunk_size: chunk_size, content_type: @resource.content_type)
     @stream.write(string)
 
     chunk_size
   end
 
+  def files
+    @bucket.find(filename: @filename)
+  end
+
   def file_exists?
-    @bucket.find(filename: @filename).count > 0
+    files.count > 0
   end
 
   ##
@@ -90,7 +98,7 @@ class GridFSAdapter
   # @param [Proc] a block which iterates over the returned chunks.
   def each(&block)
     # write the file if it doesn't exist
-    return self.write block.call if 0 == @bucket.find(filename: @filename).count
+    return self.write block.call if 0 == files.count
 
     # open a download stream
     @stream ||= @bucket.open_download_stream_by_name(@filename)
@@ -107,7 +115,6 @@ class GridFSAdapter
   # chunks in the collection.
   # @return [Boolean] whether anything was deleted
   def delete
-    files = @bucket.find(filename: @filename)
     return false if 0 == files.count
 
     ids = files.map(&:extract_id) # NB: requires Mongoid

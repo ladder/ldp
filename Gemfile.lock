@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/ladder/rdf-ldp.git
-  revision: 26ad1f302a3e673442c7a6a13a1847e846692447
-  branch: develop
+  revision: 2f2e277a03ba9002be799874e92d90f929c2b41a
+  branch: storage-adapter
   specs:
     rdf-ldp (0.7.0)
       json-ld (~> 2.0)
