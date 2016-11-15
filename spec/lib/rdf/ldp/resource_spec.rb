@@ -8,9 +8,10 @@ describe RDF::LDP::Resource do
 
   describe '.find' do
     it 'raises NotFound when the resource does not exist' do
-      expect { described_class.find(uri, Ladder::LDP.settings.repository) }
+      expect { described_class.find(uri, RDF::Repository.new) }
         .to raise_error RDF::LDP::NotFound
     end
+
     context 'when the resource exists' do
       before do
         graph << RDF::Statement(uri, RDF::Vocab::DC.title, 'snorkmaiden')
@@ -54,8 +55,8 @@ describe RDF::LDP::Resource do
 
     it 'matches Resource to RDFSource' do
       header = '<http://www.w3.org/ns/ldp#Resource>;rel="type"'
-      expect(described_class.interaction_model(header))
-        .to eq RDF::LDP::RDFSource
+      expect(described_class.interaction_model(header).ancestors)
+        .to include(RDF::LDP::RDFSource)
     end
 
     it 'matches to narrower class' do
@@ -68,8 +69,8 @@ describe RDF::LDP::Resource do
     it 'matches to narrower class NonRDFSource' do
       header = '<http://www.w3.org/ns/ldp#Resource>;rel="type",' \
                '<http://www.w3.org/ns/ldp#NonRDFSource>;rel="type"'
-      expect(described_class.interaction_model(header))
-        .to eq RDF::LDP::NonRDFSource
+      expect(described_class.interaction_model(header).ancestors)
+        .to include(RDF::LDP::NonRDFSource)
     end
 
     it 'rejects conflicting source types ' do

@@ -35,6 +35,9 @@ module Ladder
       #
       # @return [Hash] a serialized version of the file
       def as_indexed_json(*)
+        # FIXME: #read does multiple #find calls
+        data = collection.database.fs.open_download_stream_by_name(filename).read
+
         { file: Base64.encode64(data) }
       end
     end
