@@ -4,22 +4,22 @@ require 'sinatra/base'
 
 # Persistence
 require 'rdf/mongo'
-require 'mongoid'
-require 'active_job'
+#require 'mongoid'
+#require 'active_job'
 
-require 'ladder/mongo_repository'
-require 'ladder/rdf_source'
-require 'ladder/non_rdf_source'
+#require 'ladder/mongo_repository'
+#require 'ladder/rdf_source'
+#require 'ladder/non_rdf_source'
 
 # for debugging
 require 'pry'
 
 # patch RDF::Mongo::Repository
-RDF::Mongo::Repository.include Ladder::MongoRepository
+#RDF::Mongo::Repository.include Ladder::MongoRepository
 
 # patch RDF::LDP classes
-RDF::LDP::RDFSource.include    Ladder::RDFSource
-RDF::LDP::NonRDFSource.include Ladder::NonRDFSource
+#RDF::LDP::RDFSource.include    Ladder::RDFSource
+#RDF::LDP::NonRDFSource.include Ladder::NonRDFSource
 
 module Ladder
   class LDP < Sinatra::Base
@@ -33,7 +33,7 @@ module Ladder
     # Set defaults in case user has not configured values
     configure do
       set :log_level, :fatal
-      set :queue_adapter, :inline # ActiveJob
+#      set :queue_adapter, :inline # ActiveJob
 
       # Mongoid
       set :uri, 'mongodb://localhost:27017/ladder'
@@ -41,11 +41,11 @@ module Ladder
     end
 
     # Configuration settings for ActiveJob
-    ActiveJob::Base.queue_adapter = Ladder::LDP.settings.queue_adapter
+#    ActiveJob::Base.queue_adapter = Ladder::LDP.settings.queue_adapter
 
     # Configuration settings for Mongoid
-    Mongoid.load_configuration({ clients: { default: { uri: Ladder::LDP.settings.uri  } },
-                                 options: { log_level: Ladder::LDP.settings.log_level } }) unless Mongoid.configured?
+#    Mongoid.load_configuration({ clients: { default: { uri: Ladder::LDP.settings.uri  } },
+#                                 options: { log_level: Ladder::LDP.settings.log_level } }) unless Mongoid.configured?
 
     get '/*' do
       RDF::LDP::Container.new(RDF::URI(request.url), settings.repository)

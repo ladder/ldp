@@ -28,9 +28,9 @@ Gem::Specification.new do |gem|
 
   gem.add_runtime_dependency 'rdf-ldp'
   gem.add_runtime_dependency 'rdf-mongo'
-  gem.add_runtime_dependency 'mongoid', '~> 5.1'
-  gem.add_runtime_dependency 'activejob'
-  gem.add_runtime_dependency 'elasticsearch-model'
+#  gem.add_runtime_dependency 'mongoid', '~> 5.1'
+#  gem.add_runtime_dependency 'activejob'
+#  gem.add_runtime_dependency 'elasticsearch-model'
 
   gem.add_development_dependency 'pry'
   gem.add_development_dependency 'rspec'
