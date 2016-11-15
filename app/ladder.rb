@@ -2,24 +2,19 @@
 require 'rack/ldp'
 require 'sinatra/base'
 
+# for debugging
+require 'pry'
+
 # Persistence
 require 'rdf/mongo'
 #require 'mongoid'
 #require 'active_job'
 
-#require 'ladder/mongo_repository'
-#require 'ladder/rdf_source'
-#require 'ladder/non_rdf_source'
+require 'ladder/rdf_source'
+require 'ladder/non_rdf_source'
 
-# for debugging
-require 'pry'
-
-# patch RDF::Mongo::Repository
-#RDF::Mongo::Repository.include Ladder::MongoRepository
-
-# patch RDF::LDP classes
-#RDF::LDP::RDFSource.include    Ladder::RDFSource
-#RDF::LDP::NonRDFSource.include Ladder::NonRDFSource
+RDF::LDP::InteractionModel.register(Ladder::RDFSource,    for: RDF::Vocab::LDP.RDFSource, default: true)
+RDF::LDP::InteractionModel.register(Ladder::NonRDFSource, for: RDF::Vocab::LDP.NonRDFSource)
 
 module Ladder
   class LDP < Sinatra::Base

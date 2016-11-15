@@ -1,9 +1,10 @@
-require 'ladder/model/statement'
-require 'ladder/model/graph'
-require 'ladder/model/metagraph'
+#require 'ladder/model/statement'
+#require 'ladder/model/graph'
+#require 'ladder/model/metagraph'
 
 module Ladder
-  module RDFSource
+  class RDFSource < RDF::LDP::RDFSource
+=begin
     def initialize(*)
       Ladder::Statement.store_in(collection: Ladder::LDP.settings.repository.collection.name)
       super
@@ -50,5 +51,6 @@ module Ladder
     def g_to_attr(g)
       RDF::Mongo::Conversion.to_mongo(g.name, :graph_name)
     end
+=end
   end
 end
