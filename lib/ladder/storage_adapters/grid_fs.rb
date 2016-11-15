@@ -1,4 +1,4 @@
-require 'rdf/mongo'
+require 'mongo'
 
 ##
 # StorageAdapters bundle the logic for mapping a `NonRDFSource` to a
@@ -73,7 +73,7 @@ class GridFSAdapter
   #
   # NB: We explicitly set chunk_size based on the size
   # of incoming chunks from Rack; it is assumed that all
-  # chunks will be the same size.
+  # chunks (except perhaps the last) will be the same size.
   #
   # @param [String] a string to write to the GridFS file.
   def write(string)
