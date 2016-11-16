@@ -50,7 +50,7 @@ class GridFSAdapter
     @filename = resource.subject_uri.path
 
     repo = resource.instance_variable_get(:@data)
-    raise TypeError, "expected #{resource.subject_uri} to be an instance of RDF::Mongo::Repository" unless repo.is_a? RDF::Mongo::Repository
+    raise TypeError, "expected #{repo} to be an instance of RDF::Mongo::Repository" unless repo.is_a? RDF::Mongo::Repository
 
     @bucket = repo.client.database.fs
   end
@@ -62,6 +62,10 @@ class GridFSAdapter
   # @return [GridFSAdapter] an instance of GridFSAdapter
   def io(&block)
     yield(self) if block_given?
+
+    # FIXME: if Rack @body is empty, no GridFS file is created
+    # eg. return self.write block.call unless file_exists?
+
     close_stream
     self
   end
@@ -99,27 +103,22 @@ class GridFSAdapter
   #
   # @param [Proc] a block which iterates over the returned chunks.
   def each(&block)
-    # write the file if it doesn't exist
-    return self.write block.call if 0 == files.count
-
     # open a download stream
     @stream ||= @bucket.open_download_stream_by_name(@filename)
 
     block_given? ? @stream.each(&block) : @stream.to_a
   end
-
-  def to_a
-    self.each
-  end
+  alias_method :to_a, :each
 
   ##
   # This will remove all revisions of the file and corresponding
   # chunks in the collection.
   # @return [Boolean] whether anything was deleted
   def delete
-    return false if 0 == files.count
+    return false unless file_exists?
 
-    ids = files.map(&:extract_id) # NB: requires Mongoid
+    # https://github.com/mongoid/mongoid/blob/master/lib/mongoid/extensions/hash.rb#L90-L92
+    ids = files.map { |hash| hash["_id"] || hash["id"] || hash[:id] || hash[:_id] }
 
     @bucket.files_collection.delete_many(_id: {'$in' => ids})
     @bucket.chunks_collection.delete_many(files_id: {'$in' => ids})

@@ -9,7 +9,10 @@ describe 'ladder' do
 
   describe 'base container /' do
 
-    before(:all) { RDF::Ladder.settings.repository.clear! }
+    before(:all) do
+      RDF::Ladder.settings.repository.clear!
+      Ladder::NonRDFSource.new(RDF::URI.new('example/uri'), RDF::Ladder.settings.repository).storage.clear!
+    end
 
     describe 'GET' do
       it 'has default content type "text/turtle"' do
