@@ -4,7 +4,11 @@ module Ladder
   class NonRDFSource < RDF::LDP::NonRDFSource
     def initialize(subject_uri, data)
       super
+
+      # FIXME: clarify this logic
+      @data = RDF::Ladder.settings.repository unless @data.is_a? RDF::Mongo::Repository
       @storage = GridFSAdapter.new(self)
+
       self
     end
 

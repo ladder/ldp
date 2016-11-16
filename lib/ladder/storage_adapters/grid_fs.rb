@@ -67,6 +67,7 @@ class GridFSAdapter
     self.write('') unless @stream
 
     @stream.close
+    @stream = nil
     self
   end
 
@@ -96,7 +97,7 @@ class GridFSAdapter
   # @param [Proc] a block which iterates over the returned chunks.
   def each(&block)
     # open a download stream
-    @stream ||= @bucket.open_download_stream_by_name(@filename)
+    @stream = @bucket.open_download_stream_by_name(@filename)
 
     block_given? ? @stream.each(&block) : @stream.to_a
   end
