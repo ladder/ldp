@@ -1,4 +1,3 @@
-#require 'ladder/model/file'
 require 'ladder/storage_adapters/grid_fs'
 
 module Ladder
@@ -19,7 +18,7 @@ module Ladder
       Ladder::File.where(filename: subject_uri.path).first
     end
 =end
-
+=begin
     def create(input, c_type)
       super
 #      file.run_callbacks(:create) if file
@@ -37,5 +36,6 @@ module Ladder
       super
       self
     end
+=end
   end
 end

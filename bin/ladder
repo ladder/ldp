@@ -5,4 +5,4 @@ require 'bundler'
 Bundler.setup
 
 require 'ladder'
-Ladder::LDP.run!
+RDF::Ladder.run!

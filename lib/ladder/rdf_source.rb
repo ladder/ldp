@@ -1,7 +1,3 @@
-#require 'ladder/model/statement'
-#require 'ladder/model/graph'
-#require 'ladder/model/metagraph'
-
 module Ladder
   class RDFSource < RDF::LDP::RDFSource
 =begin
