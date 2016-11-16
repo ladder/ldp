@@ -81,21 +81,13 @@ class GridFSAdapter
   #
   # @param [io] a readable IO to write to the GridFS file.
   def write(io)
-    chunk_size = io.size
-
     # open an upload stream
-    @stream = @bucket.open_upload_stream(@filename, chunk_size: chunk_size, content_type: @resource.content_type)
+    @stream = @bucket.open_upload_stream(@filename, content_type: @resource.content_type)
     @stream.write(io)
-
-    chunk_size
   end
 
   def files
     @bucket.find(filename: @filename)
-  end
-
-  def file_exists?
-    files.count > 0
   end
 
   ##
@@ -115,7 +107,7 @@ class GridFSAdapter
   # chunks in the collection.
   # @return [Boolean] whether anything was deleted
   def delete
-    return false unless file_exists?
+    return false unless files.count > 0
 
     # https://github.com/mongoid/mongoid/blob/master/lib/mongoid/extensions/hash.rb#L90-L92
     ids = files.map { |hash| hash["_id"] || hash["id"] || hash[:id] || hash[:_id] }
