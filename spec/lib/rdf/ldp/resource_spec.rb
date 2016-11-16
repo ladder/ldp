@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe RDF::LDP::Resource do
-  it_behaves_like 'a Resource' 
+  it_behaves_like 'a Resource'
 
   subject { described_class.new(uri) }
   let(:uri) { RDF::URI 'http://example.org/moomin' }
@@ -26,7 +26,7 @@ describe RDF::LDP::Resource do
           .to be_a RDF::LDP::RDFSource
         expect(described_class.find(uri, repository).subject_uri).to eq uri
       end
-      
+
       it 'finds the resource with container interaction model' do
         graph << RDF::Statement(uri, RDF.type, RDF::LDP::Container.to_uri)
 
@@ -48,28 +48,28 @@ describe RDF::LDP::Resource do
   describe '.interaction_model' do
     it 'matches header to class' do
       header = '<http://www.w3.org/ns/ldp#BasicContainer>;rel="type"'
-      expect(described_class.interaction_model(header))
-        .to eq RDF::LDP::Container
+      expect(described_class.interaction_model(header).ancestors)
+        .to include(RDF::LDP::Container)
     end
 
     it 'matches Resource to RDFSource' do
       header = '<http://www.w3.org/ns/ldp#Resource>;rel="type"'
-      expect(described_class.interaction_model(header))
-        .to eq RDF::LDP::RDFSource
+      expect(described_class.interaction_model(header).ancestors)
+        .to include(RDF::LDP::RDFSource)
     end
 
     it 'matches to narrower class' do
       header = '<http://www.w3.org/ns/ldp#RDFSource>;rel="type",' \
                '<http://www.w3.org/ns/ldp#BasicContainer>;rel="type"'
-      expect(described_class.interaction_model(header))
-        .to eq RDF::LDP::Container
+      expect(described_class.interaction_model(header).ancestors)
+        .to include(RDF::LDP::Container)
     end
 
     it 'matches to narrower class NonRDFSource' do
       header = '<http://www.w3.org/ns/ldp#Resource>;rel="type",' \
                '<http://www.w3.org/ns/ldp#NonRDFSource>;rel="type"'
-      expect(described_class.interaction_model(header))
-        .to eq RDF::LDP::NonRDFSource
+      expect(described_class.interaction_model(header).ancestors)
+        .to include(RDF::LDP::NonRDFSource)
     end
 
     it 'rejects conflicting source types ' do
@@ -85,18 +85,18 @@ describe RDF::LDP::Resource do
       expect { described_class.interaction_model(header) }
         .to raise_error RDF::LDP::NotAcceptable
     end
-    
+
     context 'custom implementation class' do
       let!(:custom_container) { Class.new(RDF::LDP::Container) }
 
       before do
         @original_class = RDF::LDP::InteractionModel.for(RDF::Vocab::LDP.BasicContainer)
       end
-      
+
       after do
         RDF::LDP::InteractionModel.register(@original_class, for: RDF::Vocab::LDP.BasicContainer)
       end
-      
+
       it 'matches header to class' do
         RDF::LDP::InteractionModel.register(custom_container, for: RDF::Vocab::LDP.BasicContainer)
         header = '<http://www.w3.org/ns/ldp#BasicContainer>;rel="type"'

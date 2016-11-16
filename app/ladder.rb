@@ -25,7 +25,6 @@ class RDF::Ladder < Sinatra::Base
 
   # Set defaults in case user has not configured values
   configure do
-    set :log_level, :fatal
     set :uri, 'mongodb://localhost:27017/ladder'
     set :repository, RDF::Mongo::Repository.new(uri: uri)
   end
