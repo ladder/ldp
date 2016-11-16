@@ -63,10 +63,10 @@ class GridFSAdapter
   def io(&block)
     yield(self) if block_given?
 
-    # FIXME: if Rack @body is empty, no GridFS file is created
-    # eg. return self.write block.call unless file_exists?
+    # If the Rack @body is empty, no Stream::Write is created
+    self.write('') unless @stream
 
-    close_stream
+    @stream.close
     self
   end
 
@@ -79,13 +79,13 @@ class GridFSAdapter
   # of incoming chunks from Rack; it is assumed that all
   # chunks (except perhaps the last) will be the same size.
   #
-  # @param [String] a string to write to the GridFS file.
-  def write(string)
-    chunk_size = string.length
+  # @param [io] a readable IO to write to the GridFS file.
+  def write(io)
+    chunk_size = io.size
 
     # open an upload stream
     @stream = @bucket.open_upload_stream(@filename, chunk_size: chunk_size, content_type: @resource.content_type)
-    @stream.write(string)
+    @stream.write(io)
 
     chunk_size
   end
@@ -131,12 +131,5 @@ class GridFSAdapter
   def clear!
     @bucket.files_collection.delete_many
     @bucket.chunks_collection.delete_many
-  end
-
-  private
-
-  def close_stream
-    @stream.close if @stream
-    @stream = nil
   end
 end
