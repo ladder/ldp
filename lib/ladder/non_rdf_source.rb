@@ -3,11 +3,10 @@ require 'ladder/storage_adapters/grid_fs'
 module Ladder
   class NonRDFSource < RDF::LDP::NonRDFSource
     def initialize(subject_uri, data)
-      super
 
-      # FIXME: clarify this logic
-      @data = RDF::Ladder.settings.repository unless @data.is_a? RDF::Mongo::Repository
-      @storage = GridFSAdapter.new(self)
+      @subject_uri = subject_uri
+      @data = RDF::Ladder.settings.repository
+      super(subject_uri, RDF::Ladder.settings.repository, GridFSAdapter)
 
       self
     end
