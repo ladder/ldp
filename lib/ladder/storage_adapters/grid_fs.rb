@@ -85,6 +85,7 @@ class GridFSAdapter
     # open an upload stream
     @stream = @bucket.open_upload_stream(@filename, content_type: @resource.content_type)
     @stream.write(io)
+#    @stream.instance_variable_get(:@length)
   end
 
   def files

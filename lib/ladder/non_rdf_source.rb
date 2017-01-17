@@ -2,7 +2,7 @@ require 'ladder/storage_adapters/grid_fs'
 
 module Ladder
   class NonRDFSource < RDF::LDP::NonRDFSource
-    def initialize(subject_uri, data)
+    def initialize(subject_uri, data = nil)
 
       @subject_uri = subject_uri
       @data = RDF::Ladder.settings.repository
